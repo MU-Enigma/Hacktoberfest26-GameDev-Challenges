@@ -38,21 +38,9 @@ You are free to use any game engine you are comfortable with.
 
 If you choose to use another engine, make sure to:
 
-- Add the appropriate `.gitignore` file for that engine.
+- Add the appropriate `.gitignore` file for that engine, this repo already has a `.gitignore` which tracks unity projects ONLY.
 - Avoid committing unnecessary generated files.
 - Keep your project structure clean and organized.
-
-## ⚠️ IMPORTANT: GitIgnore is Mandatory
-
-Before pushing your project to this repository, adding a proper **.gitignore file is a MUST**.
-
-Game engines generate many unnecessary files (cache files, build files, temporary files, etc.) which should not be uploaded to GitHub.
-
-GitHub provides ready-made `.gitignore` templates, for popular game engines such as:
-
-- Unity
-- Unreal Engine
-- Godot
 
 Make sure to use the correct `.gitignore` file for your engine before creating a Pull Request
 

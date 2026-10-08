@@ -79,7 +79,7 @@ Pressing **"E"** could make your character:
 - Activate a funny ability
 - Interact with the environment
 
-The possibilities are endless.
+The possibilities are endless. Each mechanic can be a PR, so the more the mechanics, the more PRs you can submit
 
 Try to be as creative and absurd as possible. The more unique your mechanic is, the better!
 

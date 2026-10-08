@@ -2,7 +2,7 @@
 
 ## Objective
 
-Create a character with abilities and interactions by adding new mechanics to your player.
+Create a character with abilities and interactions by adding new mechanics to your player. Each unique mechanic can be your pr, so more mechanics = more prs
 
 Create a **new project** and experiment with different character mechanics.
 

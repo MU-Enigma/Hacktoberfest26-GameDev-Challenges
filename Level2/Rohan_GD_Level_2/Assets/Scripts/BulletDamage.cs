@@ -1,16 +1,21 @@
+
 using UnityEngine;
 
 public class BulletDamage : MonoBehaviour
 {
-    // Start is called once before the first execution of Update after the MonoBehaviour is created
-    void Start()
-    {
-        
-    }
+    [SerializeField] private float damage = 10f;
 
-    // Update is called once per frame
-    void Update()
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        
+        Debug.Log("Bullet hit: " + other.name);
+
+        EnemyHealth enemy = other.GetComponentInParent<EnemyHealth>();
+
+        if (enemy != null)
+        {
+            Debug.Log("Enemy found! Applying " + damage + " damage.");
+            enemy.TakeDamage(damage);
+            Destroy(gameObject);
+        }
     }
 }

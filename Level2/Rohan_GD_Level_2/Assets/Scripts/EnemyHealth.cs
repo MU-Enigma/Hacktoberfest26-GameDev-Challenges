@@ -10,17 +10,18 @@ public class EnemyHealth : MonoBehaviour
     private void Awake()
     {
         currentHealth = maxHealth;
+        Debug.Log("Enemy health: " + currentHealth);
     }
 
     public void TakeDamage(float damage)
     {
-        if (damage <= 0f)
-            return;
-
         currentHealth -= damage;
+
+        Debug.Log("Enemy took damage! Remaining health: " + currentHealth);
 
         if (currentHealth <= 0f)
         {
+            Debug.Log("Enemy defeated!");
             Destroy(gameObject);
         }
     }

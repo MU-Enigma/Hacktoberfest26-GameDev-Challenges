@@ -23,19 +23,24 @@ public class PlayerColorChanger : MonoBehaviour
 
     void Update()
     {
-        if (Keyboard.current != null &&
-            Keyboard.current.zKey.wasPressedThisFrame)
+        if (Keyboard.current == null)
+            return;
+
+        if (Keyboard.current.zKey.wasPressedThisFrame)
         {
+            Debug.Log("Z pressed! Changing player colour.");
             ChangeColor();
         }
     }
 
     void ChangeColor()
     {
-        foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+        foreach (SpriteRenderer sr in spriteRenderers)
         {
-            spriteRenderer.color = colors[currentColorIndex];
+            sr.color = colors[currentColorIndex];
         }
+
+        Debug.Log("Player colour changed to: " + colors[currentColorIndex]);
 
         currentColorIndex = (currentColorIndex + 1) % colors.Length;
     }

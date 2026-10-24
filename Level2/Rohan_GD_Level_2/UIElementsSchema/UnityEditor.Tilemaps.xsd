@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="utf-8"?>
+<xs:schema xmlns:tns="UnityEditor.Tilemaps" elementFormDefault="qualified" targetNamespace="UnityEditor.Tilemaps" xmlns:xs="http://www.w3.org/2001/XMLSchema">
+  <xs:import schemaLocation="UnityEngine.UIElements.xsd" namespace="UnityEngine.UIElements" />
+  <xs:import schemaLocation="UnityEditor.UIElements.xsd" namespace="UnityEditor.UIElements" />
+  <xs:complexType name="TilePaletteBrushesLabelType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q1="UnityEngine.UIElements" base="q1:TextElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteBrushesLabel" xmlns:q2="UnityEngine.UIElements" substitutionGroup="q2:TextElement" type="tns:TilePaletteBrushesLabelType" />
+  <xs:complexType name="TilePaletteBrushesButtonType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q3="UnityEditor.UIElements" base="q3:ToolbarButtonType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteBrushesButton" xmlns:q4="UnityEditor.UIElements" substitutionGroup="q4:ToolbarButton" type="tns:TilePaletteBrushesButtonType" />
+  <xs:complexType name="TilePaletteActiveTargetsPopupType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q5="UnityEngine.UIElements" base="q5:BindableElementType">
+        <xs:choice />
+        <xs:attribute name="label" type="xs:string" />
+        <xs:attribute name="value" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteActiveTargetsPopup" xmlns:q6="UnityEngine.UIElements" substitutionGroup="q6:BindableElement" type="tns:TilePaletteActiveTargetsPopupType" />
+  <xs:complexType name="TilePaletteActivePalettePopupType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q7="UnityEngine.UIElements" base="q7:BindableElementType">
+        <xs:choice />
+        <xs:attribute name="label" type="xs:string" />
+        <xs:attribute name="value" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteActivePalettePopup" xmlns:q8="UnityEngine.UIElements" substitutionGroup="q8:BindableElement" type="tns:TilePaletteActivePalettePopupType" />
+  <xs:complexType name="TilePaletteBrushInspectorElementType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q9="UnityEngine.UIElements" base="q9:IMGUIContainerType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteBrushInspectorElement" xmlns:q10="UnityEngine.UIElements" substitutionGroup="q10:IMGUIContainer" type="tns:TilePaletteBrushInspectorElementType" />
+  <xs:complexType name="TilePaletteBrushesPopupType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q11="UnityEngine.UIElements" base="q11:BindableElementType">
+        <xs:choice />
+        <xs:attribute name="label" type="xs:string" />
+        <xs:attribute default="project://database/?fileID=0&amp;guid=&amp;type=0#Default Brush" name="value" type="xs:string" />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteBrushesPopup" xmlns:q12="UnityEngine.UIElements" substitutionGroup="q12:BindableElement" type="tns:TilePaletteBrushesPopupType" />
+  <xs:complexType name="TilePaletteFocusDropdownType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q13="UnityEditor.UIElements" base="q13:ToolbarButtonType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteFocusDropdown" xmlns:q14="UnityEditor.UIElements" substitutionGroup="q14:ToolbarButton" type="tns:TilePaletteFocusDropdownType" />
+  <xs:complexType name="TilePaletteBrushPickElementType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q15="UnityEngine.UIElements" base="q15:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteBrushPickElement" xmlns:q16="UnityEngine.UIElements" substitutionGroup="q16:VisualElement" type="tns:TilePaletteBrushPickElementType" />
+  <xs:complexType name="TilePaletteElementType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q17="UnityEngine.UIElements" base="q17:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteElement" xmlns:q18="UnityEngine.UIElements" substitutionGroup="q18:VisualElement" type="tns:TilePaletteElementType" />
+  <xs:complexType name="TilePaletteClipboardErrorElementType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q19="UnityEngine.UIElements" base="q19:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteClipboardErrorElement" xmlns:q20="UnityEngine.UIElements" substitutionGroup="q20:VisualElement" type="tns:TilePaletteClipboardErrorElementType" />
+  <xs:complexType name="TilePaletteClipboardFirstUserElementType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q21="UnityEngine.UIElements" base="q21:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteClipboardFirstUserElement" xmlns:q22="UnityEngine.UIElements" substitutionGroup="q22:VisualElement" type="tns:TilePaletteClipboardFirstUserElementType" />
+  <xs:complexType name="GridPaintingToolbarType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q23="UnityEngine.UIElements" base="q23:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="GridPaintingToolbar" xmlns:q24="UnityEngine.UIElements" substitutionGroup="q24:VisualElement" type="tns:GridPaintingToolbarType" />
+  <xs:complexType name="TilePaletteClipboardViewElementType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q25="UnityEngine.UIElements" base="q25:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteClipboardViewElement" xmlns:q26="UnityEngine.UIElements" substitutionGroup="q26:VisualElement" type="tns:TilePaletteClipboardViewElementType" />
+  <xs:complexType name="TilePaletteClipboardElementType">
+    <xs:complexContent mixed="false">
+      <xs:extension xmlns:q27="UnityEngine.UIElements" base="q27:VisualElementType">
+        <xs:choice />
+      </xs:extension>
+    </xs:complexContent>
+  </xs:complexType>
+  <xs:element name="TilePaletteClipboardElement" xmlns:q28="UnityEngine.UIElements" substitutionGroup="q28:VisualElement" type="tns:TilePaletteClipboardElementType" />
+</xs:schema>

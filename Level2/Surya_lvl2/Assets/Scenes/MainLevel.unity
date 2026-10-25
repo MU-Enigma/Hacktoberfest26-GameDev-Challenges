@@ -526,6 +526,7 @@ GameObject:
   - component: {fileID: 801979611}
   - component: {fileID: 801979612}
   - component: {fileID: 801979613}
+  - component: {fileID: 801979614}
   m_Layer: 0
   m_Name: Player
   m_TagString: Player
@@ -726,6 +727,18 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerShrink
   smallScale: {x: 0.5, y: 0.5, z: 1}
+--- !u!114 &801979614
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 801979606}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: da6ea235618475a448dd227a2e5f6d2f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerColorChanger
 --- !u!1 &900134531
 GameObject:
   m_ObjectHideFlags: 0
@@ -896,6 +909,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::BouncePad
   bounceForce: 14
+  burgerBounceForce: 10
   normalColor: {r: 0, g: 1, b: 0, a: 1}
   activatedColor: {r: 1, g: 0.92156863, b: 0.015686275, a: 1}
 --- !u!61 &1287766730

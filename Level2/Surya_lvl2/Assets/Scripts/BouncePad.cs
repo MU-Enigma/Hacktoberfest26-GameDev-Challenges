@@ -5,6 +5,7 @@ public class BouncePad : MonoBehaviour
 {
     [Header("Bounce Settings")]
     public float bounceForce = 14f;
+    public float burgerBounceForce = 10f;
 
     [Header("Visual Feedback")]
     public Color normalColor = Color.green;
@@ -22,18 +23,25 @@ public class BouncePad : MonoBehaviour
 
     void OnCollisionEnter2D(Collision2D collision)
     {
-        if (!collision.gameObject.CompareTag("Player"))
+        GameObject hitObject = collision.gameObject;
+
+        bool isPlayer = hitObject.CompareTag("Player");
+        bool isBurger = hitObject.name == "Spawned Burger";
+
+        if (!isPlayer && !isBurger)
             return;
 
-        Rigidbody2D playerRb = collision.gameObject.GetComponent<Rigidbody2D>();
+        Rigidbody2D rb = hitObject.GetComponent<Rigidbody2D>();
 
-        if (playerRb == null)
+        if (rb == null)
             return;
 
-        // Launch the player upward.
-        playerRb.linearVelocity = new Vector2(
-            playerRb.linearVelocity.x,
-            bounceForce
+        float force = isPlayer ? bounceForce : burgerBounceForce;
+
+        // Bounce the player or burger upward.
+        rb.linearVelocity = new Vector2(
+            rb.linearVelocity.x,
+            force
         );
 
         if (spriteRenderer != null)
@@ -43,7 +51,9 @@ public class BouncePad : MonoBehaviour
             Invoke(nameof(ResetColor), 0.25f);
         }
 
-        Debug.Log("Bounce pad activated!");
+        Debug.Log(isPlayer
+            ? "Bounce pad activated by player!"
+            : "Bounce pad activated by burger!");
     }
 
     void ResetColor()

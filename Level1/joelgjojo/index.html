@@ -1,0 +1,137 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Level 1 - Chicken Movement</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1d2433; display: grid; place-items: center; font-family: system-ui, sans-serif; color: #e8eefc; }
+  canvas { width: min(96vw, 960px); aspect-ratio: 16 / 9; image-rendering: pixelated; border-radius: 10px; box-shadow: 0 10px 40px #0008; }
+  p { margin: 10px 0 0; opacity: .75; font-size: 14px; text-align: center; }
+</style>
+</head>
+<body>
+<div>
+  <canvas id="game" width="960" height="540"></canvas>
+  <p>Move with <b>WASD</b> or the <b>arrow keys</b>. Hold <b>Shift</b> to waddle faster.</p>
+</div>
+<script>
+// Level 1: a top-down 2D player controller for the blue chicken.
+const W = 960, H = 540;
+const canvas = document.getElementById('game');
+const ctx = canvas.getContext('2d');
+ctx.imageSmoothingEnabled = false;
+
+// ---- Input ---------------------------------------------------------------
+const keys = new Set();
+const GAME_KEYS = ['KeyW', 'KeyA', 'KeyS', 'KeyD', 'ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', 'ShiftLeft', 'ShiftRight'];
+addEventListener('keydown', e => { if (GAME_KEYS.includes(e.code)) e.preventDefault(); keys.add(e.code); });
+addEventListener('keyup', e => keys.delete(e.code));
+addEventListener('blur', () => keys.clear()); // stop moving if the tab loses focus
+const held = (...codes) => codes.some(c => keys.has(c));
+
+// ---- Player --------------------------------------------------------------
+const sprite = new Image();
+sprite.src = 'blue_chicken.png';
+
+const player = {
+  x: W / 2, y: H / 2,          // centre of the chicken
+  size: 64,                    // drawn height in pixels
+  vx: 0, vy: 0,
+  speed: 240,                  // pixels per second
+  sprintMultiplier: 1.7,
+  accel: 14,                   // how quickly velocity catches up to the target (higher = snappier)
+  walkTime: 0,                 // drives the waddle animation
+};
+
+function update(dt) {
+  // Read the direction the player wants to go.
+  let dx = 0, dy = 0;
+  if (held('KeyA', 'ArrowLeft')) dx -= 1;
+  if (held('KeyD', 'ArrowRight')) dx += 1;
+  if (held('KeyW', 'ArrowUp')) dy -= 1;
+  if (held('KeyS', 'ArrowDown')) dy += 1;
+
+  // Normalise so moving diagonally is not faster than moving straight.
+  const len = Math.hypot(dx, dy);
+  if (len > 0) { dx /= len; dy /= len; }
+
+  const speed = player.speed * (held('ShiftLeft', 'ShiftRight') ? player.sprintMultiplier : 1);
+
+  // Ease velocity toward the target so starting and stopping feel smooth.
+  const t = 1 - Math.exp(-player.accel * dt);
+  player.vx += (dx * speed - player.vx) * t;
+  player.vy += (dy * speed - player.vy) * t;
+
+  player.x += player.vx * dt;
+  player.y += player.vy * dt;
+
+  // Keep the chicken inside the screen.
+  const halfW = player.size * 0.47, halfH = player.size / 2;
+  player.x = Math.max(halfW, Math.min(W - halfW, player.x));
+  player.y = Math.max(halfH, Math.min(H - halfH, player.y));
+
+  const moving = Math.hypot(player.vx, player.vy) > 20;
+  player.walkTime = moving ? player.walkTime + dt * (speed / 240) : 0;
+}
+
+// ---- Drawing -------------------------------------------------------------
+function drawGround() {
+  ctx.fillStyle = '#8fd16a';
+  ctx.fillRect(0, 0, W, H);
+  // A checker of slightly darker grass so movement is easy to see.
+  ctx.fillStyle = '#84c661';
+  for (let y = 0; y < H; y += 60) {
+    for (let x = (y / 60) % 2 ? 60 : 0; x < W; x += 120) ctx.fillRect(x, y, 60, 60);
+  }
+}
+
+function drawChicken() {
+  const { x, y, size } = player;
+  const w = size * 0.94, h = size;
+  const bob = Math.abs(Math.sin(player.walkTime * 12)) * 5;   // little hop while walking
+  const tilt = Math.sin(player.walkTime * 12) * 0.12;          // side-to-side waddle
+
+  // Shadow stays on the ground while the chicken bobs.
+  ctx.fillStyle = 'rgba(0,0,0,.18)';
+  ctx.beginPath();
+  ctx.ellipse(x, y + h / 2 - 2, w * 0.38, 7, 0, 0, Math.PI * 2);
+  ctx.fill();
+
+  ctx.save();
+  ctx.translate(x, y - bob);
+  ctx.rotate(tilt);
+  if (sprite.complete && sprite.naturalWidth) {
+    ctx.drawImage(sprite, -w / 2, -h / 2, w, h);
+  } else {
+    ctx.fillStyle = '#7fe3d2'; // fallback if the image has not loaded yet
+    ctx.fillRect(-w / 2, -h / 2, w, h);
+  }
+  ctx.restore();
+}
+
+function drawHud() {
+  ctx.fillStyle = 'rgba(20,30,45,.55)';
+  ctx.fillRect(12, 12, 250, 34);
+  ctx.fillStyle = '#fff';
+  ctx.font = '600 15px system-ui, sans-serif';
+  ctx.fillText(`x: ${player.x.toFixed(0)}   y: ${player.y.toFixed(0)}`, 24, 34);
+}
+
+// ---- Game loop -----------------------------------------------------------
+let last = performance.now();
+function frame(now) {
+  const dt = Math.min((now - last) / 1000, 1 / 30); // cap dt so a lag spike can't teleport the chicken
+  last = now;
+  update(dt);
+  drawGround();
+  drawChicken();
+  drawHud();
+  requestAnimationFrame(frame);
+}
+requestAnimationFrame(frame);
+
+window.player = player; // handy for poking at in the browser console
+</script>
+</body>
+</html>

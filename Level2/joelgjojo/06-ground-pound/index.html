@@ -1,0 +1,21 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Level 2 - Ground Pound</title>
+<style>
+  html, body { margin: 0; height: 100%; background: #1d2433; display: grid; place-items: center; font-family: system-ui, sans-serif; color: #e8eefc; }
+  canvas { width: min(96vw, 960px); aspect-ratio: 16 / 9; image-rendering: pixelated; border-radius: 10px; box-shadow: 0 10px 40px #0008; }
+  p { margin: 10px 0 0; opacity: .75; font-size: 14px; text-align: center; }
+</style>
+</head>
+<body>
+<div>
+  <canvas id="game" width="960" height="540"></canvas>
+  <p>Press <b>S</b> or <b>Down</b> in mid-air to ground pound. Slam onto crates to smash them. Move with <b>A/D</b> or arrows, jump with <b>Space</b>/<b>W</b>, <b>R</b> resets.</p>
+</div>
+<script src="core.js"></script>
+<script src="ground-pound.js"></script>
+</body>
+</html>

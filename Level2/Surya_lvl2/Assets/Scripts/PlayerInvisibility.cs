@@ -5,26 +5,40 @@ using UnityEngine.InputSystem;
 public class PlayerInvisibility : MonoBehaviour
 {
     private SpriteRenderer[] spriteRenderers;
+    private PlayerColorChanger colorChanger;
+
     private bool isInvisible = false;
 
     void Awake()
     {
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);
+        colorChanger = GetComponent<PlayerColorChanger>();
     }
 
     void Update()
     {
-        if (Keyboard.current != null &&
-            Keyboard.current.iKey.wasPressedThisFrame)
-        {
-            isInvisible = !isInvisible;
+        if (Keyboard.current == null)
+            return;
 
-            foreach (SpriteRenderer spriteRenderer in spriteRenderers)
+        if (Keyboard.current.iKey.wasPressedThisFrame)
+        {
+            // Only allow invisibility when the player is white.
+            if (colorChanger != null && !colorChanger.IsDefaultColor)
             {
-                spriteRenderer.enabled = !isInvisible;
+                Debug.Log("You must be white to become invisible!");
+                return;
             }
 
-            Debug.Log(isInvisible ? "Player is invisible!" : "Player is visible!");
+            isInvisible = !isInvisible;
+
+            foreach (SpriteRenderer sr in spriteRenderers)
+            {
+                sr.enabled = !isInvisible;
+            }
+
+            Debug.Log(isInvisible
+                ? "Player is invisible!"
+                : "Player is visible!");
         }
     }
 }

@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using UnityEngine.InputSystem;
+using System.Collections;
 
 public class PlayerInvisibility : MonoBehaviour
 {
@@ -8,6 +9,7 @@ public class PlayerInvisibility : MonoBehaviour
     private PlayerColorChanger colorChanger;
 
     private bool isInvisible = false;
+    public float invisibilityDuration = 10f;
 
     void Awake()
     {
@@ -22,23 +24,39 @@ public class PlayerInvisibility : MonoBehaviour
 
         if (Keyboard.current.iKey.wasPressedThisFrame)
         {
-            // Only allow invisibility when the player is white.
+            if (isInvisible)
+                return;
+
             if (colorChanger != null && !colorChanger.IsDefaultColor)
             {
                 Debug.Log("You must be white to become invisible!");
                 return;
             }
 
-            isInvisible = !isInvisible;
+            StartCoroutine(InvisibilityTimer());
+        }
+    }
 
-            foreach (SpriteRenderer sr in spriteRenderers)
-            {
-                sr.enabled = !isInvisible;
-            }
+    IEnumerator InvisibilityTimer()
+    {
+        isInvisible = true;
+        SetVisibility(false);
 
-            Debug.Log(isInvisible
-                ? "Player is invisible!"
-                : "Player is visible!");
+        Debug.Log("Player is invisible for 10 seconds!");
+
+        yield return new WaitForSeconds(invisibilityDuration);
+
+        SetVisibility(true);
+        isInvisible = false;
+
+        Debug.Log("Invisibility expired! Player is visible again.");
+    }
+
+    void SetVisibility(bool visible)
+    {
+        foreach (SpriteRenderer sr in spriteRenderers)
+        {
+            sr.enabled = visible;
         }
     }
 }

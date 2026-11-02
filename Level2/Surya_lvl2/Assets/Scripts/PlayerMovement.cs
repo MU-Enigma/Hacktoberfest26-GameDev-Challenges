@@ -40,7 +40,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 movement;
     private Vector3 originalScale;
-    private int jumpsRemaining = 2;
+    private int jumpsRemaining = 4;
     private bool isGrounded;
     private bool isDashing;
     private bool dashReady = true;
@@ -156,26 +156,20 @@ public class PlayerMovement : MonoBehaviour
         CheckGround(collision);
     }
 
-    void OnCollisionExit2D(Collision2D collision)
-    {
-        if (collision.gameObject.CompareTag("Ground"))
-            isGrounded = false;
-    }
-
     void CheckGround(Collision2D collision)
-    {
-        if (!collision.gameObject.CompareTag("Ground")) return;
+{
+    if (!collision.gameObject.CompareTag("Ground")) return;
 
-        foreach (ContactPoint2D contact in collision.contacts)
+    foreach (ContactPoint2D contact in collision.contacts)
+    {
+        if (contact.normal.y > 0.5f)
         {
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
-                jumpsRemaining = 2;
-                return;
-            }
+            isGrounded = true;
+            jumpsRemaining = 4;
+            return;
         }
     }
+}
 
     IEnumerator Dash()
     {

@@ -15,6 +15,7 @@ public class PlayerColorChanger : MonoBehaviour
     };
 
     private int currentColorIndex = 0;
+    public bool IsDefaultColor => currentColorIndex == 0;
 
     public bool IsDefaultColor => currentColorIndex == 0;
 

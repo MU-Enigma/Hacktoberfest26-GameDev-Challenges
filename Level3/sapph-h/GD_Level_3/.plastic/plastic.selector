@@ -1,4 +1,0 @@
-repository "GD_Level_1/GD_Level_1@13469957404242@cloud"
-  path "/"
-    br "/main"
-    co "/main"

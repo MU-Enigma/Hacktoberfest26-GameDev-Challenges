@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
 
     [Header("Audio")]
     public AudioClip quackSound;
+    public AudioClip fartSound;
     private AudioSource audioSource;
 
     [Header("Abilities")]
@@ -36,10 +37,14 @@ public class PlayerMovement : MonoBehaviour
         audioSource.spatialBlend = 0f; // 2D sound
 
 #if UNITY_EDITOR
-        // Auto-load quack sound if not explicitly assigned in Inspector
+        // Auto-load audio clips if not explicitly assigned in Inspector
         if (quackSound == null)
         {
             quackSound = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/quack-sound-effect.mp3");
+        }
+        if (fartSound == null)
+        {
+            fartSound = UnityEditor.AssetDatabase.LoadAssetAtPath<AudioClip>("Assets/fart-sound-effect.mp3");
         }
 #endif
     }
@@ -56,6 +61,12 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space))
         {
             Quack();
+        }
+
+        // Play fart sound when pressing F
+        if (Input.GetKeyDown(KeyCode.F))
+        {
+            Fart();
         }
 
         // Disappear for 2 seconds when pressing X
@@ -90,6 +101,14 @@ public class PlayerMovement : MonoBehaviour
         if (quackSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(quackSound);
+        }
+    }
+
+    void Fart()
+    {
+        if (fartSound != null && audioSource != null)
+        {
+            audioSource.PlayOneShot(fartSound);
         }
     }
 

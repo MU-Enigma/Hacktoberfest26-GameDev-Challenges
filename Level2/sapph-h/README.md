@@ -11,6 +11,7 @@ Here is the list of abilities and controls implemented for the duck:
 - **Q**: Spawn Abhinav (the obstacle)
 - **E**: Spawn egg
 - **X**: Disappear for 2 seconds (invisibility cloak)
+- **I**: Teleport back to initial position (center)
 
 ## 🚀 How to Run
 

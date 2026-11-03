@@ -14,6 +14,7 @@ public class PlayerMovement : MonoBehaviour
     private bool isDisappeared = false;
     private SpriteRenderer[] spriteRenderers;
     private Collider2D[] colliders;
+    private Vector3 initialPosition;
 
     private Rigidbody2D rb;
     private Vector2 movement;
@@ -21,6 +22,7 @@ public class PlayerMovement : MonoBehaviour
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        initialPosition = transform.position;
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
         colliders = GetComponentsInChildren<Collider2D>();
 
@@ -60,6 +62,26 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.X) && !isDisappeared)
         {
             StartCoroutine(DisappearCoroutine());
+        }
+
+        // Teleport back to initial position (center) when pressing I
+        if (Input.GetKeyDown(KeyCode.I))
+        {
+            TeleportToStart();
+        }
+    }
+
+    public void TeleportToStart()
+    {
+        transform.position = initialPosition;
+        if (rb != null)
+        {
+            rb.position = initialPosition;
+#if UNITY_6000_0_OR_NEWER
+            rb.linearVelocity = Vector2.zero;
+#else
+            rb.velocity = Vector2.zero;
+#endif
         }
     }
 

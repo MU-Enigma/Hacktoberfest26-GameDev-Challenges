@@ -161,6 +161,13 @@ public class PlayerMovement : MonoBehaviour
         // Normalize vector to prevent faster diagonal movement
         movement = movement.normalized;
 
+        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        if (movement.x > 0) {
+            sr.flipX = false; // Facing right
+        } else if (movement.x < 0) {
+            sr.flipX = true; // Facing left
+        }
+
         if (isInverted) movement *= -1;
     }
 

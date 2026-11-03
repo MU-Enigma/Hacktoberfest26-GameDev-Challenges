@@ -149,6 +149,23 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = originalScale;
         }
 
+        if (Input.GetKeyDown(KeyCode.Y)) {
+            // Create an empty object and attach it above the character's head
+            GameObject speech = new GameObject("SpeechBubble");
+            speech.transform.position = transform.position + new Vector3(0, 1.5f, 0);
+            speech.transform.SetParent(transform);
+
+            // Add Unity's built-in Text component
+            TextMesh textMesh = speech.AddComponent<TextMesh>();
+            textMesh.text = "KAIZOKU OU!"; // Change this to whatever you want
+            textMesh.characterSize = 0.5f;
+            textMesh.anchor = TextAnchor.MiddleCenter;
+            textMesh.color = Color.white;
+
+            // Remove the text automatically after 2 seconds
+            Destroy(speech, 2f);
+        }
+
         // Transport to origin
         if (Input.GetKeyDown(KeyCode.O)) {
             transform.position = Vector3.zero;

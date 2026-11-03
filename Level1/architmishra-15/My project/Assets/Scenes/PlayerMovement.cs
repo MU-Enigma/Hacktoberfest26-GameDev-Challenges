@@ -38,6 +38,19 @@ public class PlayerMovement : MonoBehaviour
             GetComponent<SpriteRenderer>().color = Random.ColorHSV();
         }
 
+        // Add torque with the B key and X to stop the rotation
+        if (Input.GetKeyDown(KeyCode.B)) {
+            rb.AddTorque(500f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.X)) {
+            // Kill the spinning momentum
+            rb.angularVelocity = 0f; 
+            
+            // Snap the rotation back to upright (0,0,0)
+            transform.rotation = Quaternion.identity; 
+        }
+
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

@@ -166,6 +166,28 @@ public class PlayerMovement : MonoBehaviour
             Destroy(speech, 2f);
         }
 
+        if (Input.GetKeyDown(KeyCode.L)) {
+            // Create the laser object and attach it to the player
+            GameObject laser = new GameObject("LaserBeam");
+            laser.transform.position = transform.position;
+            laser.transform.SetParent(transform);
+
+            // Add and configure the LineRenderer to draw a red beam
+            LineRenderer lr = laser.AddComponent<LineRenderer>();
+            lr.startWidth = 0.1f;
+            lr.endWidth = 0.1f;
+            lr.material = new Material(Shader.Find("Sprites/Default"));
+            lr.startColor = Color.red;
+            lr.endColor = Color.red;
+
+            // Draw the laser from the chicken to 10 units to the right
+            lr.SetPosition(0, transform.position);
+            lr.SetPosition(1, transform.position + new Vector3(10f, 0, 0));
+
+            // Flash the laser for 0.5 seconds then delete it
+            Destroy(laser, 0.5f);
+        }
+
         // Transport to origin
         if (Input.GetKeyDown(KeyCode.O)) {
             transform.position = Vector3.zero;

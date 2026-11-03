@@ -16,19 +16,26 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
-
+        // Toggle gravity inversion with the G key
         if (Input.GetKeyDown(KeyCode.G)) {
             rb.gravityScale = rb.gravityScale < 0 ? 0f : -1f; // Toggles float on and off
         }
 
+        // Movement inversion toggle with the R key
         if (Input.GetKeyDown(KeyCode.R)) isInverted = !isInverted;
 
+        // flattening
         if (Input.GetKeyDown(KeyCode.P)) {
             isPancaked = !isPancaked; // Toggle the state
             
             // Set Y scale to 0.2 if pancaked, or 1.0 (normal) if not
             float targetY = isPancaked ? 0.2f : 1f;
             transform.localScale = new Vector3(transform.localScale.x, targetY, transform.localScale.z);
+        }
+
+        // Change color randomly with the C key
+        if (Input.GetKeyDown(KeyCode.C)) {
+            GetComponent<SpriteRenderer>().color = Random.ColorHSV();
         }
 
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)

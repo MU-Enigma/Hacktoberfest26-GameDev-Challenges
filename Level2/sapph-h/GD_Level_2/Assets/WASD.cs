@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
@@ -8,12 +9,20 @@ public class PlayerMovement : MonoBehaviour
     public AudioClip quackSound;
     private AudioSource audioSource;
 
+    [Header("Abilities")]
+    public float disappearDuration = 2f;
+    private bool isDisappeared = false;
+    private SpriteRenderer[] spriteRenderers;
+    private Collider2D[] colliders;
+
     private Rigidbody2D rb;
     private Vector2 movement;
 
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
+        spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        colliders = GetComponentsInChildren<Collider2D>();
 
         // Set up AudioSource for sound effects
         audioSource = GetComponent<AudioSource>();
@@ -46,6 +55,12 @@ public class PlayerMovement : MonoBehaviour
         {
             Quack();
         }
+
+        // Disappear for 2 seconds when pressing X
+        if (Input.GetKeyDown(KeyCode.X) && !isDisappeared)
+        {
+            StartCoroutine(DisappearCoroutine());
+        }
     }
 
     void Quack()
@@ -53,6 +68,45 @@ public class PlayerMovement : MonoBehaviour
         if (quackSound != null && audioSource != null)
         {
             audioSource.PlayOneShot(quackSound);
+        }
+    }
+
+    private IEnumerator DisappearCoroutine()
+    {
+        isDisappeared = true;
+        SetVisible(false);
+
+        yield return new WaitForSeconds(disappearDuration);
+
+        SetVisible(true);
+        isDisappeared = false;
+    }
+
+    private void SetVisible(bool visible)
+    {
+        if (spriteRenderers == null || spriteRenderers.Length == 0)
+        {
+            spriteRenderers = GetComponentsInChildren<SpriteRenderer>();
+        }
+        if (colliders == null || colliders.Length == 0)
+        {
+            colliders = GetComponentsInChildren<Collider2D>();
+        }
+
+        foreach (var sr in spriteRenderers)
+        {
+            if (sr != null)
+            {
+                sr.enabled = visible;
+            }
+        }
+
+        foreach (var col in colliders)
+        {
+            if (col != null)
+            {
+                col.enabled = visible;
+            }
         }
     }
 

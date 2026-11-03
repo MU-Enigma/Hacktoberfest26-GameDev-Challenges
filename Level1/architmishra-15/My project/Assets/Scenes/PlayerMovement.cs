@@ -14,6 +14,9 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+        if (Input.GetKeyDown(KeyCode.G)) {
+            rb.gravityScale = rb.gravityScale < 0 ? 0f : -1f; // Toggles float on and off
+        }
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

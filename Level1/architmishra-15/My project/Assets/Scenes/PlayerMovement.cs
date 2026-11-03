@@ -7,6 +7,7 @@ public class PlayerMovement : MonoBehaviour
     private Vector2 movement;
     private bool isInverted = false;
     private bool isPancaked = false;
+    public GameObject eggPrefab;
 
     void Start()
     {
@@ -60,6 +61,12 @@ public class PlayerMovement : MonoBehaviour
             } else {
                 tr.enabled = !tr.enabled;
             }
+        }
+
+        // Egg Projectile with Space key
+        if (Input.GetKeyDown(KeyCode.Space) && eggPrefab != null) {
+            GameObject egg = Instantiate(eggPrefab, transform.position, Quaternion.identity);
+            egg.AddComponent<Rigidbody2D>().AddForce(transform.right * 500f);
         }
 
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)

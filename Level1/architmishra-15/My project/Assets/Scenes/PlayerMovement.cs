@@ -51,6 +51,17 @@ public class PlayerMovement : MonoBehaviour
             transform.rotation = Quaternion.identity; 
         }
 
+        // Trailing afterimage
+        if (Input.GetKeyDown(KeyCode.T)) {
+            TrailRenderer tr = gameObject.GetComponent<TrailRenderer>();
+            if (tr == null) {
+                tr = gameObject.AddComponent<TrailRenderer>();
+                tr.time = 0.5f;
+            } else {
+                tr.enabled = !tr.enabled;
+            }
+        }
+
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

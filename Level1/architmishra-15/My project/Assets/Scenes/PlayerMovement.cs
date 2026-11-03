@@ -102,6 +102,13 @@ public class PlayerMovement : MonoBehaviour
             Destroy(katana, 2f); // Clean up the clone after 2 seconds
         }
 
+        if (Input.GetKeyDown(KeyCode.Mouse1)) { // Mouse1 is Right-Click
+            // Convert screen pixel coordinates to game world coordinates
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPos.z = 0f; // Keep the chicken on the 2D plane
+            transform.position = mouseWorldPos;
+        }
+
         // Burger projectile with J key
         if (Input.GetKeyDown(KeyCode.J) && burgerPrefab != null) {
         for (int i = -2; i <= 2; i++) {

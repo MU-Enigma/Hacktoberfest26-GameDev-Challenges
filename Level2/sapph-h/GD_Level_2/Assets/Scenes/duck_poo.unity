@@ -334,6 +334,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::PlayerMovement
   moveSpeed: 5
+  quackSound: {fileID: 8300000, guid: f2c96c4b2a64e1e4cb8e8fbf32d1894b, type: 3}
 --- !u!50 &1657243045
 Rigidbody2D:
   serializedVersion: 5

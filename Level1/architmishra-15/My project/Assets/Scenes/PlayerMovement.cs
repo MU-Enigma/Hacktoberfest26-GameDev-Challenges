@@ -8,11 +8,15 @@ public class PlayerMovement : MonoBehaviour
     private bool isInverted = false;
     private bool isPancaked = false;
     public GameObject eggPrefab;
+    private bool isGiant = false;
+    private Vector3 originalScale;  
 
     void Start()
     {
+
         // Grab the Rigidbody2D component automatically
         rb = GetComponent<Rigidbody2D>();
+        originalScale = transform.localScale; // Save the default size
     }
 
     void Update()
@@ -85,6 +89,17 @@ public class PlayerMovement : MonoBehaviour
                     Destroy(chicken.gameObject);
                 }
             }
+        }
+
+        // Giant mode toggle with M key
+        if (Input.GetKeyDown(KeyCode.M)) {
+            // If giant, double the original scale; if not, revert to original
+            transform.localScale *= 2f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.V)) {
+            // If giant, revert to original scale; if not, double the original scale
+            transform.localScale = originalScale;
         }
 
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)

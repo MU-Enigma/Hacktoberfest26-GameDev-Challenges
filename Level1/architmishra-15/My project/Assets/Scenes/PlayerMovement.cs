@@ -6,6 +6,7 @@ public class PlayerMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 movement;
     private bool isInverted = false;
+    private bool isPancaked = false;
 
     void Start()
     {
@@ -21,6 +22,15 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (Input.GetKeyDown(KeyCode.R)) isInverted = !isInverted;
+
+        if (Input.GetKeyDown(KeyCode.P)) {
+            isPancaked = !isPancaked; // Toggle the state
+            
+            // Set Y scale to 0.2 if pancaked, or 1.0 (normal) if not
+            float targetY = isPancaked ? 0.2f : 1f;
+            transform.localScale = new Vector3(transform.localScale.x, targetY, transform.localScale.z);
+        }
+
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

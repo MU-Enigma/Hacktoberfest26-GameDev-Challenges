@@ -9,7 +9,8 @@ public class PlayerMovement : MonoBehaviour
     private bool isPancaked = false;
     public GameObject eggPrefab;
     private bool isGiant = false;
-    private Vector3 originalScale;  
+    private Vector3 originalScale;
+    public GameObject katanaPrefab;  
 
     void Start()
     {
@@ -89,6 +90,15 @@ public class PlayerMovement : MonoBehaviour
                     Destroy(chicken.gameObject);
                 }
             }
+        }
+
+        // Katana projectile with F key
+        if (Input.GetKeyDown(KeyCode.F) && katanaPrefab != null) {
+            // Spawn it 1 unit to the right, angled at -45 degrees
+            GameObject katana = Instantiate(katanaPrefab, transform.position + new Vector3(1f, 0, 0), Quaternion.Euler(0, 0, -45));
+            // Add physics and shoot it
+            katana.AddComponent<Rigidbody2D>().linearVelocity = new Vector2(15f, 0); 
+            Destroy(katana, 2f); // Clean up the clone after 2 seconds
         }
 
         // Giant mode toggle with M key

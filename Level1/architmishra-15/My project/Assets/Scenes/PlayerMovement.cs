@@ -52,7 +52,7 @@ public class PlayerMovement : MonoBehaviour
             transform.rotation = Quaternion.identity; 
         }
 
-        // Trailing afterimage
+        // Trailing afterimage with the T key
         if (Input.GetKeyDown(KeyCode.T)) {
             TrailRenderer tr = gameObject.GetComponent<TrailRenderer>();
             if (tr == null) {
@@ -67,6 +67,24 @@ public class PlayerMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Space) && eggPrefab != null) {
             GameObject egg = Instantiate(eggPrefab, transform.position, Quaternion.identity);
             egg.AddComponent<Rigidbody2D>().AddForce(transform.right * 500f);
+        }
+
+        // Decoy clone with N key
+        if (Input.GetKeyDown(KeyCode.N)) {
+            Instantiate(gameObject, transform.position, Quaternion.identity);
+        }
+
+        // remove the clones with K key
+        if (Input.GetKeyDown(KeyCode.K)) {
+            // Find all objects running this script
+            PlayerMovement[] allChickens = FindObjectsOfType<PlayerMovement>();
+            
+            foreach (PlayerMovement chicken in allChickens) {
+                // Only destroy the ones that are clones
+                if (chicken.gameObject.name.Contains("(Clone)")) {
+                    Destroy(chicken.gameObject);
+                }
+            }
         }
 
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)

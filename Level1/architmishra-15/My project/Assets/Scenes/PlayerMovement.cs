@@ -102,6 +102,11 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = originalScale;
         }
 
+        // Transport to origin
+        if (Input.GetKeyDown(KeyCode.O)) {
+            transform.position = Vector3.zero;
+        }
+
         // Capture WASD or Arrow Key inputs (-1, 0, or 1)
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

@@ -301,6 +301,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: Assembly-CSharp::EggSpawner
   eggPrefab: {fileID: 1884816456258521201, guid: 2c8e7aad5f8fea98f8becd4baea4458d, type: 3}
+  obstaclePrefab: {fileID: 2884816456258521201, guid: 4a1b8c2d3e4f5a6b7c8d9e0f1a2b3c4d, type: 3}
   spawnPoint: {fileID: 1458402945}
 --- !u!1 &1657243043
 GameObject:

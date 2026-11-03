@@ -8,9 +8,10 @@ public class PlayerMovement : MonoBehaviour
     private bool isInverted = false;
     private bool isPancaked = false;
     public GameObject eggPrefab;
-    private bool isGiant = false;
+    // private bool isGiant = false;
     private Vector3 originalScale;
-    public GameObject katanaPrefab;  
+    public GameObject katanaPrefab;
+    public GameObject burgerPrefab;
 
     void Start()
     {
@@ -100,6 +101,15 @@ public class PlayerMovement : MonoBehaviour
             katana.AddComponent<Rigidbody2D>().linearVelocity = new Vector2(15f, 0); 
             Destroy(katana, 2f); // Clean up the clone after 2 seconds
         }
+
+        // Burger projectile with J key
+        if (Input.GetKeyDown(KeyCode.J) && burgerPrefab != null) {
+        for (int i = -2; i <= 2; i++) {
+            // Space them out horizontally by 1.5 units, spawn 5 units high
+            Vector3 spawnPos = transform.position + new Vector3(i * 1.5f, 5f, 0);
+            Instantiate(burgerPrefab, spawnPos, Quaternion.identity);
+        }
+    }
 
         // Giant mode toggle with M key
         if (Input.GetKeyDown(KeyCode.M)) {

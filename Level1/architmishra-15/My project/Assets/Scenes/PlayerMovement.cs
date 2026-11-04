@@ -215,6 +215,15 @@ public class PlayerMovement : MonoBehaviour
             GetComponent<SpriteRenderer>().enabled = true; 
         }
 
+        if (Input.GetKey(KeyCode.U)) {
+            // Offset the camera randomly on the X and Y axes
+            Camera.main.transform.position = new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), -10f);
+        }
+        if (Input.GetKeyUp(KeyCode.U)) {
+            // Snap back to the default 2D camera position
+            Camera.main.transform.position = new Vector3(0, 0, -10f);
+        }
+
         // Transport to origin
         if (Input.GetKeyDown(KeyCode.O)) {
             transform.position = Vector3.zero;

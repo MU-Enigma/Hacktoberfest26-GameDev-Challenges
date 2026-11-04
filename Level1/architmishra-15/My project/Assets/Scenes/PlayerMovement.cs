@@ -58,6 +58,16 @@ public class PlayerMovement : MonoBehaviour
             transform.rotation = Quaternion.identity; 
         }
 
+        // Matrix Slow-Mo (hold 1)
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            Time.timeScale = 0.2f;
+            Time.fixedDeltaTime = 0.02f * Time.timeScale; // keep physics smooth
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha1)) {
+            Time.timeScale = 1f;
+            Time.fixedDeltaTime = 0.02f;
+        }
+
         // Trailing afterimage with the T key
         if (Input.GetKeyDown(KeyCode.T)) {
             TrailRenderer tr = gameObject.GetComponent<TrailRenderer>();
@@ -148,6 +158,8 @@ public class PlayerMovement : MonoBehaviour
             // If giant, revert to original scale; if not, double the original scale
             transform.localScale = originalScale;
         }
+
+
 
         if (Input.GetKeyDown(KeyCode.Y)) {
             // Create an empty object and attach it above the character's head

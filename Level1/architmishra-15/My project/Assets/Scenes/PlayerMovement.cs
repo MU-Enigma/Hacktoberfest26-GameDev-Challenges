@@ -224,6 +224,12 @@ public class PlayerMovement : MonoBehaviour
             Camera.main.transform.position = new Vector3(0, 0, -10f);
         }
 
+        if (Input.GetKeyDown(KeyCode.E)) {
+            // Toggles the camera's Z-rotation between 180 and 0
+            float currentZ = Camera.main.transform.eulerAngles.z;
+            Camera.main.transform.rotation = Quaternion.Euler(0, 0, currentZ == 0 ? 180f : 0f);
+        }
+
         // Transport to origin
         if (Input.GetKeyDown(KeyCode.O)) {
             transform.position = Vector3.zero;

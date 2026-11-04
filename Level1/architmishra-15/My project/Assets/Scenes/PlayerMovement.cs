@@ -122,6 +122,13 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.LeftShift)) {
+            moveSpeed *= 2f; // Double speed when pressed
+        }
+        if (Input.GetKeyUp(KeyCode.LeftShift)) {
+            moveSpeed /= 2f; // Return to normal when released
+        }
+
         // Burger projectile with J key
         if (Input.GetKeyDown(KeyCode.J) && burgerPrefab != null) {
         for (int i = -2; i <= 2; i++) {

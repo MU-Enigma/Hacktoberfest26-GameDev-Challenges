@@ -2,17 +2,28 @@ using UnityEngine;
 
 public class CapybaraCar : MonoBehaviour
 {
-    public Sprite carSprite;
+    public Sprite[] carFrames;
+    public AudioClip carAudio;
     public float driveSpeed = 8.5f;
+    public float frameRate = 12f;
 
     [HideInInspector]
     public bool isInCar = false;
     private GameObject carObj;
     private SpriteRenderer carSr;
+    private AudioSource audioSource;
     private PlayerMovement pm;
     private SpriteRenderer capySr;
-    private float normalSpeed = 3.5f;
+    private float normalSpeed = 5f;
     private float honkTimer = 0f;
+    private float frameTimer = 0f;
+    private int currentFrame = 0;
+
+    void Awake()
+    {
+        EnsureAudioSource();
+        LoadAssets();
+    }
 
     void Start()
     {
@@ -22,6 +33,92 @@ public class CapybaraCar : MonoBehaviour
         {
             normalSpeed = pm.moveSpeed;
         }
+
+        EnsureAudioSource();
+        LoadAssets();
+    }
+
+    private void EnsureAudioSource()
+    {
+        if (audioSource == null)
+        {
+            Transform child = transform.Find("CarAudio");
+            if (child == null)
+            {
+                GameObject go = new GameObject("CarAudio");
+                go.transform.SetParent(transform);
+                go.transform.localPosition = Vector3.zero;
+                audioSource = go.AddComponent<AudioSource>();
+            }
+            else
+            {
+                audioSource = child.GetComponent<AudioSource>();
+            }
+
+            audioSource.loop = true;
+            audioSource.playOnAwake = false;
+            audioSource.volume = 1f;
+            audioSource.spatialBlend = 0f;
+            audioSource.pitch = 1f;
+        }
+    }
+
+    private void LoadAssets()
+    {
+        if (carAudio == null)
+        {
+            carAudio = Resources.Load<AudioClip>("ok-i-pull-up-capybara");
+            if (carAudio == null)
+            {
+                carAudio = Resources.Load<AudioClip>("Audio/ok-i-pull-up-capybara");
+            }
+        }
+        if (carAudio != null && audioSource != null)
+        {
+            audioSource.clip = carAudio;
+        }
+
+        if (carFrames == null || carFrames.Length == 0)
+        {
+            carFrames = Resources.LoadAll<Sprite>("OkPullUp");
+            if (carFrames == null || carFrames.Length == 0)
+            {
+                Texture2D[] texs = Resources.LoadAll<Texture2D>("OkPullUp");
+                if (texs != null && texs.Length > 0)
+                {
+                    carFrames = new Sprite[texs.Length];
+                    for (int i = 0; i < texs.Length; i++)
+                    {
+                        carFrames[i] = Sprite.Create(texs[i], new Rect(0, 0, texs[i].width, texs[i].height), new Vector2(0.5f, 0.5f), 100f);
+                    }
+                }
+            }
+        }
+    }
+
+    private bool CheckMode(string typeName, string fieldName)
+    {
+        Component comp = GetComponent(typeName);
+        if (comp != null && comp != this)
+        {
+            var field = comp.GetType().GetField(fieldName);
+            if (field != null)
+            {
+                object val = field.GetValue(comp);
+                if (val is bool b && b) return true;
+            }
+        }
+        return false;
+    }
+
+    public bool IsOtherModeActive()
+    {
+        return CheckMode("IndianCapybara", "isIndianMode") ||
+               CheckMode("DiscoMode", "isDisco") ||
+               CheckMode("VerityEdit", "isPlayingEdit") ||
+               CheckMode("CapybaraBurrow", "isBurrowing") ||
+               CheckMode("CapybaraSleep", "isSleeping") ||
+               CheckMode("CapybaraBath", "isBathing");
     }
 
     void Update()
@@ -38,7 +135,7 @@ public class CapybaraCar : MonoBehaviour
             {
                 ExitCar();
             }
-            else
+            else if (!IsOtherModeActive())
             {
                 EnterCar();
             }
@@ -51,10 +148,22 @@ public class CapybaraCar : MonoBehaviour
                 pm.moveSpeed = driveSpeed;
             }
 
+            // Animate car frames
+            if (carFrames != null && carFrames.Length > 0 && carSr != null)
+            {
+                frameTimer += Time.deltaTime;
+                if (frameTimer >= 1f / frameRate)
+                {
+                    frameTimer = 0f;
+                    currentFrame = (currentFrame + 1) % carFrames.Length;
+                    carSr.sprite = carFrames[currentFrame];
+                }
+            }
+
             if (carObj != null)
             {
                 bool flip = capySr != null && capySr.flipX;
-                carObj.transform.position = transform.position + new Vector3(flip ? 0.05f : -0.05f, -0.2f, 0f);
+                carObj.transform.position = transform.position;
                 if (carSr != null)
                 {
                     carSr.flipX = flip;
@@ -81,18 +190,37 @@ public class CapybaraCar : MonoBehaviour
             pm.moveSpeed = driveSpeed;
         }
 
+        if (capySr != null)
+        {
+            capySr.enabled = false;
+        }
+
         if (carObj == null)
         {
-            carObj = new GameObject("CapyConvertible");
+            carObj = new GameObject("OkPullUpCar");
             carObj.transform.SetParent(transform);
-            carObj.transform.localScale = new Vector3(1.6f, 1.6f, 1f);
+            carObj.transform.localPosition = Vector3.zero;
+            carObj.transform.localScale = new Vector3(1.4f, 1.4f, 1f);
             carSr = carObj.AddComponent<SpriteRenderer>();
-            carSr.sprite = carSprite;
-            carSr.sortingOrder = (capySr != null ? capySr.sortingOrder : 0) + 1;
+            if (carFrames != null && carFrames.Length > 0)
+            {
+                carSr.sprite = carFrames[0];
+            }
+            carSr.sortingOrder = 5;
         }
         else
         {
             carObj.SetActive(true);
+        }
+
+        EnsureAudioSource();
+        LoadAssets();
+
+        if (audioSource != null && carAudio != null)
+        {
+            audioSource.clip = carAudio;
+            audioSource.time = 0f;
+            audioSource.Play();
         }
     }
 
@@ -104,9 +232,19 @@ public class CapybaraCar : MonoBehaviour
             pm.moveSpeed = normalSpeed;
         }
 
+        if (capySr != null)
+        {
+            capySr.enabled = true;
+        }
+
         if (carObj != null)
         {
             carObj.SetActive(false);
+        }
+
+        if (audioSource != null)
+        {
+            audioSource.Stop();
         }
     }
 
@@ -154,6 +292,19 @@ public class CapybaraCar : MonoBehaviour
                 };
                 honkStyle.normal.textColor = Color.yellow;
                 GUI.Box(new Rect(bx, by, 150, 40), "HONK HONK!", honkStyle);
+            }
+        }
+        else if (!IsOtherModeActive())
+        {
+            GUIStyle btnStyle = new GUIStyle(GUI.skin.button)
+            {
+                fontSize = 13,
+                fontStyle = FontStyle.Bold
+            };
+            btnStyle.normal.textColor = Color.white;
+            if (GUI.Button(new Rect(20, 205, 185, 34), "[V] Ok I Pull Up Car", btnStyle))
+            {
+                EnterCar();
             }
         }
     }

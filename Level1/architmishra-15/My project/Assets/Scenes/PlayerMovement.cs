@@ -200,6 +200,11 @@ public class PlayerMovement : MonoBehaviour
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.H)) {
+            // Toggles camera size between default (5) and zoomed out (10)
+            Camera.main.orthographicSize = Camera.main.orthographicSize == 5f ? 10f : 5f;
+        }
+
         // Transport to origin
         if (Input.GetKeyDown(KeyCode.O)) {
             transform.position = Vector3.zero;

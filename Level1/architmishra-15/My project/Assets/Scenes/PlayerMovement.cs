@@ -205,6 +205,16 @@ public class PlayerMovement : MonoBehaviour
             Camera.main.orthographicSize = Camera.main.orthographicSize == 5f ? 10f : 5f;
         }
 
+        if (Input.GetKeyDown(KeyCode.I)) {
+            Camera.main.backgroundColor = Color.white;
+            GetComponent<SpriteRenderer>().enabled = false;
+        }
+        if (Input.GetKeyUp(KeyCode.I)) {
+            // Unity's default solid background blue color
+            Camera.main.backgroundColor = new Color(0.19f, 0.3f, 0.47f);
+            GetComponent<SpriteRenderer>().enabled = true; 
+        }
+
         // Transport to origin
         if (Input.GetKeyDown(KeyCode.O)) {
             transform.position = Vector3.zero;

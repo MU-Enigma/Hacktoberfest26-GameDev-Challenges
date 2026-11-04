@@ -27,6 +27,31 @@ public class CapybaraBurrow : MonoBehaviour
         }
     }
 
+    private bool CheckMode(string typeName, string fieldName)
+    {
+        Component comp = GetComponent(typeName);
+        if (comp != null && comp != this)
+        {
+            var field = comp.GetType().GetField(fieldName);
+            if (field != null)
+            {
+                object val = field.GetValue(comp);
+                if (val is bool b && b) return true;
+            }
+        }
+        return false;
+    }
+
+    public bool IsOtherModeActive()
+    {
+        return CheckMode("CapybaraCar", "isInCar") ||
+               CheckMode("IndianCapybara", "isIndianMode") ||
+               CheckMode("DiscoMode", "isDisco") ||
+               CheckMode("VerityEdit", "isPlayingEdit") ||
+               CheckMode("CapybaraSleep", "isSleeping") ||
+               CheckMode("CapybaraBath", "isBathing");
+    }
+
     void Update()
     {
         if (GameManager.instance != null && GameManager.instance.isGameOver) return;
@@ -36,7 +61,7 @@ public class CapybaraBurrow : MonoBehaviour
             cooldownTimer -= Time.deltaTime;
         }
 
-        if (Input.GetKeyDown(KeyCode.R) && !isBurrowing && cooldownTimer <= 0f)
+        if (Input.GetKeyDown(KeyCode.R) && !isBurrowing && cooldownTimer <= 0f && !IsOtherModeActive())
         {
             StartBurrow();
         }
@@ -119,7 +144,7 @@ public class CapybaraBurrow : MonoBehaviour
             burrowStyle.normal.textColor = Color.gray;
             GUI.Box(new Rect(20, 245, 175, 34), "[R] Burrow (" + cooldownTimer.ToString("F1") + "s)", burrowStyle);
         }
-        else
+        else if (!IsOtherModeActive())
         {
             burrowStyle.normal.textColor = new Color(0.85f, 0.55f, 0.2f);
             GUI.Box(new Rect(20, 245, 175, 34), "[R] Burrow: READY", burrowStyle);

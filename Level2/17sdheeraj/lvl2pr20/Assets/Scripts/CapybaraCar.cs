@@ -19,6 +19,12 @@ public class CapybaraCar : MonoBehaviour
     private float frameTimer = 0f;
     private int currentFrame = 0;
 
+    void Awake()
+    {
+        EnsureAudioSource();
+        LoadAssets();
+    }
+
     void Start()
     {
         pm = GetComponent<PlayerMovement>();
@@ -28,16 +34,37 @@ public class CapybaraCar : MonoBehaviour
             normalSpeed = pm.moveSpeed;
         }
 
-        // Setup AudioSource
-        audioSource = GetComponent<AudioSource>();
+        EnsureAudioSource();
+        LoadAssets();
+    }
+
+    private void EnsureAudioSource()
+    {
         if (audioSource == null)
         {
-            audioSource = gameObject.AddComponent<AudioSource>();
-        }
-        audioSource.loop = true;
-        audioSource.playOnAwake = false;
+            Transform child = transform.Find("CarAudio");
+            if (child == null)
+            {
+                GameObject go = new GameObject("CarAudio");
+                go.transform.SetParent(transform);
+                go.transform.localPosition = Vector3.zero;
+                audioSource = go.AddComponent<AudioSource>();
+            }
+            else
+            {
+                audioSource = child.GetComponent<AudioSource>();
+            }
 
-        // Auto load audio if not assigned
+            audioSource.loop = true;
+            audioSource.playOnAwake = false;
+            audioSource.volume = 1f;
+            audioSource.spatialBlend = 0f;
+            audioSource.pitch = 1f;
+        }
+    }
+
+    private void LoadAssets()
+    {
         if (carAudio == null)
         {
             carAudio = Resources.Load<AudioClip>("ok-i-pull-up-capybara");
@@ -46,12 +73,11 @@ public class CapybaraCar : MonoBehaviour
                 carAudio = Resources.Load<AudioClip>("Audio/ok-i-pull-up-capybara");
             }
         }
-        if (carAudio != null)
+        if (carAudio != null && audioSource != null)
         {
             audioSource.clip = carAudio;
         }
 
-        // Auto load frames if not assigned
         if (carFrames == null || carFrames.Length == 0)
         {
             carFrames = Resources.LoadAll<Sprite>("OkPullUp");
@@ -70,6 +96,31 @@ public class CapybaraCar : MonoBehaviour
         }
     }
 
+    private bool CheckMode(string typeName, string fieldName)
+    {
+        Component comp = GetComponent(typeName);
+        if (comp != null && comp != this)
+        {
+            var field = comp.GetType().GetField(fieldName);
+            if (field != null)
+            {
+                object val = field.GetValue(comp);
+                if (val is bool b && b) return true;
+            }
+        }
+        return false;
+    }
+
+    public bool IsOtherModeActive()
+    {
+        return CheckMode("IndianCapybara", "isIndianMode") ||
+               CheckMode("DiscoMode", "isDisco") ||
+               CheckMode("VerityEdit", "isPlayingEdit") ||
+               CheckMode("CapybaraBurrow", "isBurrowing") ||
+               CheckMode("CapybaraSleep", "isSleeping") ||
+               CheckMode("CapybaraBath", "isBathing");
+    }
+
     void Update()
     {
         if (GameManager.instance != null && GameManager.instance.isGameOver)
@@ -84,7 +135,7 @@ public class CapybaraCar : MonoBehaviour
             {
                 ExitCar();
             }
-            else
+            else if (!IsOtherModeActive())
             {
                 EnterCar();
             }
@@ -162,8 +213,13 @@ public class CapybaraCar : MonoBehaviour
             carObj.SetActive(true);
         }
 
+        EnsureAudioSource();
+        LoadAssets();
+
         if (audioSource != null && carAudio != null)
         {
+            audioSource.clip = carAudio;
+            audioSource.time = 0f;
             audioSource.Play();
         }
     }
@@ -236,6 +292,19 @@ public class CapybaraCar : MonoBehaviour
                 };
                 honkStyle.normal.textColor = Color.yellow;
                 GUI.Box(new Rect(bx, by, 150, 40), "HONK HONK!", honkStyle);
+            }
+        }
+        else if (!IsOtherModeActive())
+        {
+            GUIStyle btnStyle = new GUIStyle(GUI.skin.button)
+            {
+                fontSize = 13,
+                fontStyle = FontStyle.Bold
+            };
+            btnStyle.normal.textColor = Color.white;
+            if (GUI.Button(new Rect(20, 205, 185, 34), "[V] Ok I Pull Up Car", btnStyle))
+            {
+                EnterCar();
             }
         }
     }

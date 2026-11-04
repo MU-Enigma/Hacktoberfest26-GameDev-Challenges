@@ -68,6 +68,11 @@ public class PlayerMovement : MonoBehaviour
             Time.fixedDeltaTime = 0.02f;
         }
 
+        if (Input.GetKey(KeyCode.LeftAlt)) {
+            float s = Mathf.Clamp(transform.localScale.x + Input.mouseScrollDelta.y * 0.1f, 0.5f, 3f);
+            transform.localScale = new Vector3(s, s, 1f);
+        }
+
         // Trailing afterimage with the T key
         if (Input.GetKeyDown(KeyCode.T)) {
             TrailRenderer tr = gameObject.GetComponent<TrailRenderer>();

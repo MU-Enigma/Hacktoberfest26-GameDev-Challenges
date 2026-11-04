@@ -8,6 +8,7 @@ Here is the list of abilities and controls implemented for the duck:
 
 - **WASD / Arrow Keys**: Move around
 - **Space**: Play quack sound effect
+- **F**: Play fart sound effect
 - **Q**: Spawn Abhinav (the obstacle)
 - **E**: Spawn egg
 - **X**: Disappear for 2 seconds (invisibility cloak)

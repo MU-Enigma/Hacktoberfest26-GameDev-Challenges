@@ -23,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+
+        HandleAimedEgg();
         // Toggle gravity inversion with the G key
         if (Input.GetKeyDown(KeyCode.G)) {
             rb.gravityScale = rb.gravityScale < 0 ? 0f : -1f; // Toggles float on and off
@@ -267,6 +269,31 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (isInverted) movement *= -1;
+    }
+
+    // Aimed Egg with Left Click (Mouse0): shoots an egg toward the cursor
+    void HandleAimedEgg()
+    {
+        if (!Input.GetKeyDown(KeyCode.Mouse0) || eggPrefab == null) return;
+
+        // Mouse position in world space, kept on the 2D plane
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0f;
+
+        // Direction from the chicken to the cursor
+        Vector2 direction = (mouseWorldPos - transform.position).normalized;
+
+        // Spawn slightly in front of the chicken so the egg doesn't collide with it
+        Vector3 spawnPos = transform.position + (Vector3)(direction * 0.8f);
+        GameObject egg = Instantiate(eggPrefab, spawnPos, Quaternion.identity);
+
+        // Reuse the Rigidbody2D if the prefab has one, otherwise add one
+        Rigidbody2D eggRb;
+        if (!egg.TryGetComponent(out eggRb)) eggRb = egg.AddComponent<Rigidbody2D>();
+
+        eggRb.linearVelocity = direction * 12f; // egg speed
+
+        Destroy(egg, 5f); // clean up so eggs don't pile up
     }
 
     void FixedUpdate()

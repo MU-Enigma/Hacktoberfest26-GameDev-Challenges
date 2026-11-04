@@ -23,6 +23,8 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+
+        HandleAimedEgg();
         // Toggle gravity inversion with the G key
         if (Input.GetKeyDown(KeyCode.G)) {
             rb.gravityScale = rb.gravityScale < 0 ? 0f : -1f; // Toggles float on and off
@@ -56,6 +58,21 @@ public class PlayerMovement : MonoBehaviour
             
             // Snap the rotation back to upright (0,0,0)
             transform.rotation = Quaternion.identity; 
+        }
+
+        // Matrix Slow-Mo (hold 1)
+        if (Input.GetKeyDown(KeyCode.Alpha1)) {
+            Time.timeScale = 0.2f;
+            Time.fixedDeltaTime = 0.02f * Time.timeScale; // keep physics smooth
+        }
+        if (Input.GetKeyUp(KeyCode.Alpha1)) {
+            Time.timeScale = 1f;
+            Time.fixedDeltaTime = 0.02f;
+        }
+
+        if (Input.GetKey(KeyCode.LeftAlt)) {
+            float s = Mathf.Clamp(transform.localScale.x + Input.mouseScrollDelta.y * 0.1f, 0.5f, 3f);
+            transform.localScale = new Vector3(s, s, 1f);
         }
 
         // Trailing afterimage with the T key
@@ -149,6 +166,8 @@ public class PlayerMovement : MonoBehaviour
             transform.localScale = originalScale;
         }
 
+
+
         if (Input.GetKeyDown(KeyCode.Y)) {
             // Create an empty object and attach it above the character's head
             GameObject speech = new GameObject("SpeechBubble");
@@ -188,6 +207,48 @@ public class PlayerMovement : MonoBehaviour
             Destroy(laser, 0.5f);
         }
 
+        if (Input.GetKeyDown(KeyCode.Z)) {
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 8f);
+            foreach(Collider2D hit in colliders) {
+                Rigidbody2D hitRb = hit.GetComponent<Rigidbody2D>();
+                // Pull objects toward the chicken
+                if (hitRb != null && hitRb != rb) {
+                    Vector2 pullDirection = transform.position - hit.transform.position;
+                    hitRb.AddForce(pullDirection.normalized * 500f);
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.H)) {
+            // Toggles camera size between default (5) and zoomed out (10)
+            Camera.main.orthographicSize = Camera.main.orthographicSize == 5f ? 10f : 5f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.I)) {
+            Camera.main.backgroundColor = Color.white;
+            GetComponent<SpriteRenderer>().enabled = false;
+        }
+        if (Input.GetKeyUp(KeyCode.I)) {
+            // Unity's default solid background blue color
+            Camera.main.backgroundColor = new Color(0.19f, 0.3f, 0.47f);
+            GetComponent<SpriteRenderer>().enabled = true; 
+        }
+
+        if (Input.GetKey(KeyCode.U)) {
+            // Offset the camera randomly on the X and Y axes
+            Camera.main.transform.position = new Vector3(Random.Range(-0.2f, 0.2f), Random.Range(-0.2f, 0.2f), -10f);
+        }
+        if (Input.GetKeyUp(KeyCode.U)) {
+            // Snap back to the default 2D camera position
+            Camera.main.transform.position = new Vector3(0, 0, -10f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.E)) {
+            // Toggles the camera's Z-rotation between 180 and 0
+            float currentZ = Camera.main.transform.eulerAngles.z;
+            Camera.main.transform.rotation = Quaternion.Euler(0, 0, currentZ == 0 ? 180f : 0f);
+        }
+
         // Transport to origin
         if (Input.GetKeyDown(KeyCode.O)) {
             transform.position = Vector3.zero;
@@ -208,6 +269,31 @@ public class PlayerMovement : MonoBehaviour
         }
 
         if (isInverted) movement *= -1;
+    }
+
+    // Aimed Egg with Left Click (Mouse0): shoots an egg toward the cursor
+    void HandleAimedEgg()
+    {
+        if (!Input.GetKeyDown(KeyCode.Mouse0) || eggPrefab == null) return;
+
+        // Mouse position in world space, kept on the 2D plane
+        Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+        mouseWorldPos.z = 0f;
+
+        // Direction from the chicken to the cursor
+        Vector2 direction = (mouseWorldPos - transform.position).normalized;
+
+        // Spawn slightly in front of the chicken so the egg doesn't collide with it
+        Vector3 spawnPos = transform.position + (Vector3)(direction * 0.8f);
+        GameObject egg = Instantiate(eggPrefab, spawnPos, Quaternion.identity);
+
+        // Reuse the Rigidbody2D if the prefab has one, otherwise add one
+        Rigidbody2D eggRb;
+        if (!egg.TryGetComponent(out eggRb)) eggRb = egg.AddComponent<Rigidbody2D>();
+
+        eggRb.linearVelocity = direction * 12f; // egg speed
+
+        Destroy(egg, 5f); // clean up so eggs don't pile up
     }
 
     void FixedUpdate()

@@ -109,6 +109,19 @@ public class PlayerMovement : MonoBehaviour
             transform.position = mouseWorldPos;
         }
 
+        if (Input.GetKeyDown(KeyCode.Q)) {
+            // Find everything within a 5-unit circle
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 5f);
+            foreach(Collider2D hit in colliders) {
+                Rigidbody2D hitRb = hit.GetComponent<Rigidbody2D>();
+                // If it has physics and isn't the player, blast it away
+                if (hitRb != null && hitRb != rb) {
+                    Vector2 pushDirection = hit.transform.position - transform.position;
+                    hitRb.AddForce(pushDirection.normalized * 1000f);
+                }
+            }
+        }
+
         // Burger projectile with J key
         if (Input.GetKeyDown(KeyCode.J) && burgerPrefab != null) {
         for (int i = -2; i <= 2; i++) {

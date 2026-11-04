@@ -188,6 +188,18 @@ public class PlayerMovement : MonoBehaviour
             Destroy(laser, 0.5f);
         }
 
+        if (Input.GetKeyDown(KeyCode.Z)) {
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 8f);
+            foreach(Collider2D hit in colliders) {
+                Rigidbody2D hitRb = hit.GetComponent<Rigidbody2D>();
+                // Pull objects toward the chicken
+                if (hitRb != null && hitRb != rb) {
+                    Vector2 pullDirection = transform.position - hit.transform.position;
+                    hitRb.AddForce(pullDirection.normalized * 500f);
+                }
+            }
+        }
+
         // Transport to origin
         if (Input.GetKeyDown(KeyCode.O)) {
             transform.position = Vector3.zero;

@@ -5,6 +5,7 @@ public class OctoMovement : MonoBehaviour
     public float moveSpeed = 5f;
     private Rigidbody2D rb;
     private Vector2 movement;
+    private Vector3 savedCheckpoint;
     
     // We reference the chicken's script to know who is currently in control
     public PlayerMovement playerScript; 
@@ -27,6 +28,14 @@ public class OctoMovement : MonoBehaviour
         }
 
         // --- OCTOCAT MECHANICS GO HERE --- //
+        if (Input.GetKeyDown(KeyCode.C)) {
+            savedCheckpoint = transform.position;
+        }
+        if (Input.GetKeyDown(KeyCode.V)) {
+            // Snap back to the last saved checkpoint and kill falling momentum
+            transform.position = savedCheckpoint;
+            rb.linearVelocity = Vector2.zero;
+        }
 
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");

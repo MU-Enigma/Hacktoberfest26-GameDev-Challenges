@@ -13,6 +13,9 @@ public class PlayerMovement : MonoBehaviour
     public GameObject katanaPrefab;
     public GameObject burgerPrefab;
 
+    public GameObject octocat; // The Octocat GameObject in the scene
+    public bool isMainCharacter = true; // Tracks who is currently active
+
     void Start()
     {
 
@@ -23,6 +26,27 @@ public class PlayerMovement : MonoBehaviour
 
     void Update()
     {
+
+
+        if (Input.GetKeyDown(KeyCode.Tab)) {
+            isMainCharacter = !isMainCharacter; // Flip the active state
+
+            // Toggle Chicken visibility and physics
+            GetComponent<SpriteRenderer>().enabled = isMainCharacter;
+            GetComponent<Collider2D>().enabled = isMainCharacter;
+
+            // Toggle Octocat visibility and physics
+            if (octocat != null) {
+                octocat.GetComponent<SpriteRenderer>().enabled = !isMainCharacter;
+                octocat.GetComponent<Collider2D>().enabled = !isMainCharacter;
+            }
+        }
+
+    // If the chicken is swapped out, kill its momentum and ignore all other keypresses below this line
+    if (!isMainCharacter) {
+        rb.linearVelocity = Vector2.zero; 
+        return; 
+    }
 
         HandleAimedEgg();
         // Toggle gravity inversion with the G key

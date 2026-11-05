@@ -106,6 +106,24 @@ public class OctoMovement : MonoBehaviour
             Destroy(blameLaser, 1f);
         }
 
+        if (Input.GetKey(KeyCode.M)) {
+            Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
+            foreach(Collider2D hit in colliders) {
+                Rigidbody2D hitRb = hit.GetComponent<Rigidbody2D>();
+                // If it has physics and isn't the Octocat, pull it in
+                if (hitRb != null && hitRb != rb) {
+                    Vector2 pullDir = transform.position - hit.transform.position;
+                    // Using continuous Force to smoothly drag them
+                    hitRb.AddForce(pullDir.normalized * 25f); 
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Alpha9) && playerScript != null) {
+            // "Pull" the dormant main branch (Chicken) to your current location
+            playerScript.transform.position = transform.position;
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

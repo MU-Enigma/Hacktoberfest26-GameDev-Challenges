@@ -6,7 +6,9 @@ public class OctoMovement : MonoBehaviour
     private Rigidbody2D rb;
     private Vector2 movement;
     private Vector3 savedCheckpoint;
-    
+
+    private GameObject expandingInk;
+
     // We reference the chicken's script to know who is currently in control
     public PlayerMovement playerScript; 
 
@@ -45,6 +47,35 @@ public class OctoMovement : MonoBehaviour
                 // Default to a vertical upward dash if standing completely still
                 transform.position += Vector3.up * 4f;
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.I) && expandingInk == null) {
+            // Generate a perfect circle using Unity's primitive sphere
+            expandingInk = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            
+            // Strip the 3D physics so it doesn't break your 2D game
+            Destroy(expandingInk.GetComponent<Collider>()); 
+            
+            // Center it on the Octocat, but pull it forward on the Z-axis so it covers the map
+            expandingInk.transform.position = transform.position + new Vector3(0, 0, -5f);
+            
+            // Apply a flat 2D shader to the 3D object to make it a solid, unlit black circle
+            Renderer rend = expandingInk.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = Color.black;
+            
+            // Start it completely invisible (size 0)
+            expandingInk.transform.localScale = Vector3.zero;
+        }
+
+        if (Input.GetKey(KeyCode.I) && expandingInk != null) {
+            // Rapidly scale the circle outward in all directions while held
+            expandingInk.transform.localScale += Vector3.one * 50f * Time.deltaTime;
+        }
+
+        if (Input.GetKeyUp(KeyCode.I) && expandingInk != null) {
+            // Erase the ink void immediately when the key is released
+            Destroy(expandingInk);
         }
 
         // Standard Movement Capture

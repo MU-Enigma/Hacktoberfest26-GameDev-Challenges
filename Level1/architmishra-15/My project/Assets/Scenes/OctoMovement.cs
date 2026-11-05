@@ -87,7 +87,7 @@ public class OctoMovement : MonoBehaviour
             moveSpeed = isNormalSize ? 10f : 5f;
         }
 
-        if (Input.GetKeyDown(KeyCode.B) && playerScript != null) {
+        if (Input.GetKeyDown(KeyCode.L) && playerScript != null) {
             GameObject blameLaser = new GameObject("BlameLaser");
             LineRenderer lr = blameLaser.AddComponent<LineRenderer>();
             
@@ -122,6 +122,21 @@ public class OctoMovement : MonoBehaviour
         if (Input.GetKeyDown(KeyCode.Alpha9) && playerScript != null) {
             // "Pull" the dormant main branch (Chicken) to your current location
             playerScript.transform.position = transform.position;
+        }
+
+        if (Input.GetKeyDown(KeyCode.B)) {
+            // Clone the Octocat exactly as it is
+            GameObject branch = Instantiate(gameObject, transform.position, transform.rotation);
+            
+            // Strip its movement script and collider so it is just a ghost image
+            Destroy(branch.GetComponent<OctoMovement>()); 
+            Destroy(branch.GetComponent<Collider2D>()); 
+            
+            // Drop the opacity to 50%
+            branch.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f);
+            
+            // Auto-clean the branch after 2 seconds
+            Destroy(branch, 2f);
         }
 
         // Standard Movement Capture

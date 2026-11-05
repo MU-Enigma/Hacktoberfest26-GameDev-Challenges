@@ -11,6 +11,7 @@ public class OctoMovement : MonoBehaviour
 
     // We reference the chicken's script to know who is currently in control
     public PlayerMovement playerScript; 
+    public Sprite originalOctoSprite;
 
     void Start()
     {
@@ -19,6 +20,7 @@ public class OctoMovement : MonoBehaviour
         // Octo starts completely invisible and uncollidable
         GetComponent<SpriteRenderer>().enabled = false;
         GetComponent<Collider2D>().enabled = false;
+        originalOctoSprite = GetComponent<SpriteRenderer>().sprite;
     }
 
     void Update()
@@ -110,6 +112,22 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         if (Input.GetKeyUp(KeyCode.I) && expandingInk != null) {
             // Erase the ink void immediately when the key is released
             Destroy(expandingInk);
+        }
+
+        if (Input.GetKeyDown(KeyCode.P) && playerScript != null) {
+            SpriteRenderer mySr = GetComponent<SpriteRenderer>();
+            SpriteRenderer targetSr = playerScript.GetComponent<SpriteRenderer>();
+            
+            // If we look like the Octocat, steal the Chicken's graphic and color tint
+            if (mySr.sprite == originalOctoSprite) {
+                mySr.sprite = targetSr.sprite;
+                mySr.color = targetSr.color;
+            } 
+            // Otherwise, drop the disguise and revert to the Octocat
+            else {
+                mySr.sprite = originalOctoSprite;
+                mySr.color = Color.white; 
+            }
         }
 
         if (Input.GetKeyDown(KeyCode.F)) {

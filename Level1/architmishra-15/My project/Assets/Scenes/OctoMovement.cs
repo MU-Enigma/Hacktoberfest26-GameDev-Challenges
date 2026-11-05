@@ -87,6 +87,25 @@ public class OctoMovement : MonoBehaviour
             moveSpeed = isNormalSize ? 10f : 5f;
         }
 
+        if (Input.GetKeyDown(KeyCode.B) && playerScript != null) {
+            GameObject blameLaser = new GameObject("BlameLaser");
+            LineRenderer lr = blameLaser.AddComponent<LineRenderer>();
+            
+            // Make the laser thin and red
+            lr.startWidth = 0.05f; 
+            lr.endWidth = 0.05f;
+            lr.material = new Material(Shader.Find("Sprites/Default"));
+            lr.startColor = Color.red; 
+            lr.endColor = Color.red;
+            
+            // Point it from the Octocat directly to the dormant Chicken
+            lr.SetPosition(0, transform.position);
+            lr.SetPosition(1, playerScript.transform.position);
+            
+            // Fade out and delete after 1 second
+            Destroy(blameLaser, 1f);
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

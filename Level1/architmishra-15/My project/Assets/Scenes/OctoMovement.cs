@@ -53,6 +53,15 @@ public class OctoMovement : MonoBehaviour
             Destroy(status, 1.5f); // Fade it out quickly
         }
 
+        if (Input.GetKey(KeyCode.Space)) {
+    // Spin rapidly around the Z axis (2D rotation)
+    transform.Rotate(0, 0, 1080f * Time.deltaTime);
+}
+if (Input.GetKeyUp(KeyCode.Space)) {
+    // Instantly snap the rotation back to default
+    transform.rotation = Quaternion.identity;
+}
+    
         if (Input.GetKeyDown(KeyCode.H)) {
             // Check if it is currently stashed (scale 0)
             bool isStashed = transform.localScale.x == 0f;

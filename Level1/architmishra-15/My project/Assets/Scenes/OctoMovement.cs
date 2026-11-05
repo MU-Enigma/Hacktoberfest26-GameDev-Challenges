@@ -12,6 +12,8 @@ public class OctoMovement : MonoBehaviour
     // We reference the chicken's script to know who is currently in control
     public PlayerMovement playerScript; 
     public Sprite originalOctoSprite;
+    private float logTimer = 0f;
+    private bool isLogActive = false;
 
     void Start()
     {
@@ -156,6 +158,36 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             
             // Fade out and delete after 1 second
             Destroy(blameLaser, 1f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.T)) {
+            isLogActive = !isLogActive; // Toggle the history trail on/off
+        }
+
+        // If active and the Octocat is actually moving, drop a green afterimage every 0.1 seconds
+        if (isLogActive && movement != Vector2.zero) {
+            logTimer += Time.deltaTime;
+            if (logTimer >= 0.1f) {
+                logTimer = 0f;
+                
+                // Create an empty visual ghost
+                GameObject commitGhost = new GameObject("CommitGhost");
+                commitGhost.transform.position = transform.position;
+                commitGhost.transform.localScale = transform.localScale;
+                
+                // Copy the sprite and direction perfectly
+                SpriteRenderer mySr = GetComponent<SpriteRenderer>();
+                SpriteRenderer ghostSr = commitGhost.AddComponent<SpriteRenderer>();
+                ghostSr.sprite = mySr.sprite;
+                ghostSr.flipX = mySr.flipX;
+                
+                // Tint it GitHub green and fade it out
+                ghostSr.color = new Color(0.2f, 1f, 0.2f, 0.4f); 
+                ghostSr.sortingOrder = -1; // Push it behind the player
+                
+                // Delete the ghost automatically after half a second
+                Destroy(commitGhost, 0.5f); 
+            }
         }
 
         if (Input.GetKey(KeyCode.M)) {

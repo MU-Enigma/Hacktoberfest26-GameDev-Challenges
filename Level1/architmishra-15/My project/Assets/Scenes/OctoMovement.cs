@@ -39,6 +39,31 @@ public class OctoMovement : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
+        if (Input.GetKeyDown(KeyCode.O)) {
+            GameObject status = new GameObject("GitStatus");
+            // Position it 2 units above the Octocat's center
+            status.transform.position = transform.position + new Vector3(0, 2f, 0);
+            status.transform.SetParent(transform); // Lock it to the Octocat so it moves with it
+            
+            TextMesh tm = status.AddComponent<TextMesh>();
+            tm.text = "Working tree clean";
+            tm.characterSize = 0.5f;
+            tm.anchor = TextAnchor.MiddleCenter;
+            
+            Destroy(status, 1.5f); // Fade it out quickly
+        }
+
+        if (Input.GetKeyDown(KeyCode.H)) {
+            // Check if it is currently stashed (scale 0)
+            bool isStashed = transform.localScale.x == 0f;
+            
+            // Toggle between scale 8 (default) and scale 0 (hidden)
+            transform.localScale = isStashed ? new Vector3(8f, 8f, 1f) : Vector3.zero;
+            
+            // Disable physics collisions while stashed
+            GetComponent<Collider2D>().enabled = isStashed;
+        }
+
         if (Input.GetKeyDown(KeyCode.LeftShift)) {
             if (movement != Vector2.zero) {
                 // Instantly teleport/dash 4 units in the current walking direction

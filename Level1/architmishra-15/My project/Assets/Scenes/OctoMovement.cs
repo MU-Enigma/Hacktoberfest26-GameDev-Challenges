@@ -78,6 +78,15 @@ public class OctoMovement : MonoBehaviour
             Destroy(expandingInk);
         }
 
+        if (Input.GetKeyDown(KeyCode.F)) {
+            // Check if currently normal size (scale 8). If so, shrink to 4. Otherwise, restore to 8.
+            bool isNormalSize = transform.localScale.x >= 8f;
+            transform.localScale = isNormalSize ? new Vector3(4f, 4f, 1f) : new Vector3(8f, 8f, 1f);
+            
+            // Double speed if shrunk, revert to normal if restored
+            moveSpeed = isNormalSize ? 10f : 5f;
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

@@ -37,6 +37,16 @@ public class OctoMovement : MonoBehaviour
             rb.linearVelocity = Vector2.zero;
         }
 
+        if (Input.GetKeyDown(KeyCode.LeftShift)) {
+            if (movement != Vector2.zero) {
+                // Instantly teleport/dash 4 units in the current walking direction
+                transform.position += (Vector3)(movement * 4f);
+            } else {
+                // Default to a vertical upward dash if standing completely still
+                transform.position += Vector3.up * 4f;
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

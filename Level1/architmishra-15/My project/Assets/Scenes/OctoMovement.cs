@@ -1,4 +1,6 @@
 using UnityEngine;
+using System.Collections;
+using System.Collections.Generic;
 
 public class OctoMovement : MonoBehaviour
 {
@@ -15,6 +17,10 @@ public class OctoMovement : MonoBehaviour
     private float logTimer = 0f;
     private bool isLogActive = false;
 
+    private SpriteRenderer sr;
+    private List<GameObject> activeObstacles = new List<GameObject>();
+
+
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -27,6 +33,8 @@ public class OctoMovement : MonoBehaviour
 
     void Update()
     {
+
+        SpriteRenderer sr = GetComponent<SpriteRenderer>(); 
         // If the chicken is the active character, ignore all Octo inputs
         if (playerScript != null && playerScript.isMainCharacter) {
             rb.linearVelocity = Vector2.zero;
@@ -185,6 +193,8 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             isLogActive = !isLogActive; // Toggle the history trail on/off
         }
 
+        
+
         // If active and the Octocat is actually moving, drop a green afterimage every 0.1 seconds
         if (isLogActive && movement != Vector2.zero) {
             logTimer += Time.deltaTime;
@@ -210,6 +220,30 @@ if (Input.GetKeyUp(KeyCode.Space)) {
                 Destroy(commitGhost, 0.5f); 
             }
         }
+
+        if (Input.GetKeyDown(KeyCode.Keypad1)) {
+    // Generate a visible primitive block 
+    GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+    wall.name = "Barricade";
+    
+    // FIX: Use DestroyImmediate so the 3D collider is instantly wiped before adding 2D ones
+    DestroyImmediate(wall.GetComponent<Collider>());
+    wall.AddComponent<BoxCollider2D>();
+    
+    Rigidbody2D wallRb = wall.AddComponent<Rigidbody2D>();
+    wallRb.bodyType = RigidbodyType2D.Static; // No more NullRef here!
+    
+    // Position it in front of the Octocat and scale it up
+    wall.transform.position = transform.position + (sr.flipX ? Vector3.left : Vector3.right) * 3f;
+    wall.transform.localScale = new Vector3(2f, 5f, 1f);
+    
+    // Paint it gray with a flat 2D material
+    Renderer rend = wall.GetComponent<Renderer>();
+    rend.material = new Material(Shader.Find("Sprites/Default"));
+    rend.material.color = Color.gray;
+    
+    activeObstacles.Add(wall);
+}
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
@@ -250,7 +284,7 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         movement = movement.normalized;
 
         // Dynamic Sprite Flipping
-        SpriteRenderer sr = GetComponent<SpriteRenderer>();
+        
         if (movement.x > 0) sr.flipX = false;
         else if (movement.x < 0) sr.flipX = true;
     }

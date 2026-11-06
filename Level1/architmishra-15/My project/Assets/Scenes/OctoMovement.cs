@@ -354,6 +354,24 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Keypad6)) {
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 20f);
+            foreach(Collider2D hit in hits) {
+                Rigidbody2D hitRb = hit.GetComponent<Rigidbody2D>();
+                
+                if (hitRb != null) {
+                    // 1. Turn off engine gravity for this object
+                    hitRb.gravityScale = 0f;
+                    
+                    // 2. Instantly kill all its existing falling momentum
+                    hitRb.linearVelocity = Vector2.zero;
+                    
+                    // 3. Give it a tiny, slow upward drift to sell the zero-G effect
+                    hitRb.AddForce(Vector2.up * (hitRb.mass * 2f), ForceMode2D.Impulse);
+                }
+            }
+        }
+
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);

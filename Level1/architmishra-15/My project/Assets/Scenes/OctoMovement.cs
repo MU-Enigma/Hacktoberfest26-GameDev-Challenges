@@ -341,6 +341,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             activeObstacles.Add(pad);
         }
 
+        if (Input.GetKeyDown(KeyCode.Keypad5)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) Destroy(obs);
+            }
+            activeObstacles.Clear();
+
+            foreach (Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+                if (body.gameObject != gameObject && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+                    Destroy(body.gameObject);
+                }
+            }
+        }
+
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);

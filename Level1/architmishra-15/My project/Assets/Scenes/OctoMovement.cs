@@ -291,6 +291,33 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             Destroy(anvil, 5f);
         }
 
+        if (Input.GetKeyDown(KeyCode.Keypad3)) {
+            // Generate a visible primitive block instead of an empty object
+            GameObject voidTrap = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            voidTrap.name = "VoidTrap";
+            
+            // FIX: Wipe 3D physics instantly before adding the 2D trigger
+            DestroyImmediate(voidTrap.GetComponent<Collider>());
+            BoxCollider2D col = voidTrap.AddComponent<BoxCollider2D>();
+            col.isTrigger = true; // Objects pass into it, triggering deletion
+            
+            // Attach your custom deletion script
+            voidTrap.AddComponent<VoidTrapLogic>(); 
+            
+            // Position it at the Octocat's feet and scale it into a wide, flat trap
+            voidTrap.transform.position = transform.position + new Vector3(0, -1f, 0);
+            voidTrap.transform.localScale = new Vector3(4f, 0.5f, 1f);
+            
+            // Paint it pitch black using the 2D shader
+            Renderer rend = voidTrap.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = Color.black;
+            
+            // Track it so Keypad 5 can clean it up later
+            activeObstacles.Add(voidTrap);
+        }
+
+
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
             foreach(Collider2D hit in colliders) {

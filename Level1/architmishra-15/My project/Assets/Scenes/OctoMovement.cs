@@ -372,6 +372,18 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Keypad7)) {
+            transform.position += Vector3.down * 5f; 
+            Collider2D[] hits = Physics2D.OverlapCircleAll(transform.position, 15f);
+            foreach(Collider2D hit in hits) {
+                Rigidbody2D hitRb = hit.GetComponent<Rigidbody2D>();
+                if (hitRb != null && hitRb != rb) {
+                    hitRb.linearVelocity = Vector2.zero;
+                    hitRb.AddForce(Vector2.up * 800f, ForceMode2D.Impulse);
+                }
+            }
+        }
+
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);

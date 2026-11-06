@@ -141,6 +141,16 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             moveSpeed = isNormalSize ? 10f : 5f;
         }
 
+        if (Input.GetKey(KeyCode.J)) {
+            // Uses a sine wave to smoothly oscillate the scale between 6 and 10
+            float pulse = 8f + Mathf.Sin(Time.time * 15f) * 2f; 
+            transform.localScale = new Vector3(pulse, pulse, 1f);
+        }
+        if (Input.GetKeyUp(KeyCode.J)) {
+            // Snap cleanly back to the default scale of 8
+            transform.localScale = new Vector3(8f, 8f, 1f); 
+        }
+
         if (Input.GetKey(KeyCode.N) && playerScript != null && originalOctoSprite != null) {
             // Swap sprites back and forth every couple of frames to create a strobe glitch
             GetComponent<SpriteRenderer>().sprite = (Time.frameCount % 4 < 2) 

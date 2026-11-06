@@ -384,6 +384,27 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Keypad8)) {
+    foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+        // Exclude the Octocat and the Chicken
+        if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+            
+            // 1. Randomize mass for collision weight
+            body.mass = Random.Range(0.1f, 100f);
+            
+            // 2. Randomize gravity so they fall at completely different speeds
+            body.gravityScale = Random.Range(0.2f, 5f);
+            
+            // 3. Randomize their scale so you can visually see the change
+            float randomSize = Random.Range(0.5f, 3f);
+            body.transform.localScale = new Vector3(randomSize, randomSize, 1f);
+            
+            // 4. Give them a tiny random rotation bump to make it look like a glitch
+            body.AddTorque(Random.Range(-50f, 50f));
+        }
+    }
+}
+
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);

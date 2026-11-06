@@ -222,28 +222,46 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         }
 
         if (Input.GetKeyDown(KeyCode.Keypad1)) {
-    // Generate a visible primitive block 
-    GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
-    wall.name = "Barricade";
-    
-    // FIX: Use DestroyImmediate so the 3D collider is instantly wiped before adding 2D ones
-    DestroyImmediate(wall.GetComponent<Collider>());
-    wall.AddComponent<BoxCollider2D>();
-    
-    Rigidbody2D wallRb = wall.AddComponent<Rigidbody2D>();
-    wallRb.bodyType = RigidbodyType2D.Static; // No more NullRef here!
-    
-    // Position it in front of the Octocat and scale it up
-    wall.transform.position = transform.position + (sr.flipX ? Vector3.left : Vector3.right) * 3f;
-    wall.transform.localScale = new Vector3(2f, 5f, 1f);
-    
-    // Paint it gray with a flat 2D material
-    Renderer rend = wall.GetComponent<Renderer>();
-    rend.material = new Material(Shader.Find("Sprites/Default"));
-    rend.material.color = Color.gray;
-    
-    activeObstacles.Add(wall);
-}
+            // Generate a visible primitive block 
+            GameObject wall = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            wall.name = "Barricade";
+            
+            // FIX: Use DestroyImmediate so the 3D collider is instantly wiped before adding 2D ones
+            DestroyImmediate(wall.GetComponent<Collider>());
+            wall.AddComponent<BoxCollider2D>();
+            
+            Rigidbody2D wallRb = wall.AddComponent<Rigidbody2D>();
+            wallRb.bodyType = RigidbodyType2D.Static; // No more NullRef here!
+            
+            // Position it in front of the Octocat and scale it up
+            wall.transform.position = transform.position + (sr.flipX ? Vector3.left : Vector3.right) * 3f;
+            wall.transform.localScale = new Vector3(2f, 5f, 1f);
+            
+            // Paint it gray with a flat 2D material
+            Renderer rend = wall.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = Color.gray;
+            
+            activeObstacles.Add(wall);
+        }
+
+        if (Input.GetKeyDown(KeyCode.Keypad5)) {
+            // First, destroy all the barricades we tracked in the list
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Destroy(obs);
+                }
+            }
+            activeObstacles.Clear();
+
+            // Next, do a full scene sweep for any other rogue physics debris
+            foreach (Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+                // Make sure it doesn't accidentally delete the Octocat or the Chicken!
+                if (body.gameObject != gameObject && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+                    Destroy(body.gameObject);
+                }
+            }
+        }
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);

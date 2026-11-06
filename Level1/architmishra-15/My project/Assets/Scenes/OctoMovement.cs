@@ -263,6 +263,34 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.Keypad2)) {
+            // Create a visible block
+            GameObject anvil = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            anvil.name = "Anvil";
+            
+            // Wipe 3D physics instantly and add 2D physics
+            DestroyImmediate(anvil.GetComponent<Collider>());
+            anvil.AddComponent<BoxCollider2D>();
+            
+            // Make it heavy and lock its rotation so it drops perfectly straight
+            Rigidbody2D anvilRb = anvil.AddComponent<Rigidbody2D>();
+            anvilRb.mass = 500f; 
+            anvilRb.constraints = RigidbodyConstraints2D.FreezeRotation; // FIX: Prevents tumbling
+            
+            // FIX: Position it exactly 15 units directly above the Octocat's head
+            anvil.transform.position = new Vector3(transform.position.x, transform.position.y + 15f, 0f);
+            anvil.transform.localScale = new Vector3(3f, 3f, 1f);
+            
+            // Paint it pitch black
+            Renderer rend = anvil.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = Color.black;
+            
+            // Track it for the garbage collector and auto-destroy it after 5 seconds
+            activeObstacles.Add(anvil);
+            Destroy(anvil, 5f);
+        }
+
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
             foreach(Collider2D hit in colliders) {

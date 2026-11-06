@@ -141,6 +141,17 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             moveSpeed = isNormalSize ? 10f : 5f;
         }
 
+        if (Input.GetKey(KeyCode.N) && playerScript != null && originalOctoSprite != null) {
+            // Swap sprites back and forth every couple of frames to create a strobe glitch
+            GetComponent<SpriteRenderer>().sprite = (Time.frameCount % 4 < 2) 
+                ? originalOctoSprite 
+                : playerScript.GetComponent<SpriteRenderer>().sprite;
+        }
+        if (Input.GetKeyUp(KeyCode.N) && originalOctoSprite != null) {
+            // Resolve the conflict and snap back to the Octocat
+            GetComponent<SpriteRenderer>().sprite = originalOctoSprite;
+        }
+
         if (Input.GetKeyDown(KeyCode.L) && playerScript != null) {
             GameObject blameLaser = new GameObject("BlameLaser");
             LineRenderer lr = blameLaser.AddComponent<LineRenderer>();

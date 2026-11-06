@@ -317,6 +317,30 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             activeObstacles.Add(voidTrap);
         }
 
+        if (Input.GetKeyDown(KeyCode.Keypad4)) {
+            GameObject pad = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            pad.name = "JumpPad";
+            
+            DestroyImmediate(pad.GetComponent<Collider>());
+            BoxCollider2D col = pad.AddComponent<BoxCollider2D>();
+            
+            Rigidbody2D padRb = pad.AddComponent<Rigidbody2D>();
+            padRb.bodyType = RigidbodyType2D.Static; // Immovable
+            
+            // Position it at Octocat's feet (scale 8 means offset down by 4)
+            pad.transform.position = transform.position + Vector3.down * 20f;
+            pad.transform.localScale = new Vector3(8f, 8f, 1f);
+            
+            Renderer rend = pad.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = Color.green;
+            
+            PhysicsMaterial2D bouncyMat = new PhysicsMaterial2D("Bouncy") { bounciness = 2.5f };
+            col.sharedMaterial = bouncyMat;
+            
+            activeObstacles.Add(pad);
+        }
+
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);

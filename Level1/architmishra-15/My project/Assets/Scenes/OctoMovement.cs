@@ -422,6 +422,13 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
+        if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Rigidbody2D>().gravityScale = -2f;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.F8)) {
             // Physically barrel-roll the camera 180 degrees to bypass URP matrix overrides
             Camera.main.transform.Rotate(0f, 0f, 180f);

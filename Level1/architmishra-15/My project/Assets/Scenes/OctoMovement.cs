@@ -385,26 +385,61 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         }
 
         if (Input.GetKeyDown(KeyCode.Keypad8)) {
-    foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
-        // Exclude the Octocat and the Chicken
-        if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
-            
-            // 1. Randomize mass for collision weight
-            body.mass = Random.Range(0.1f, 100f);
-            
-            // 2. Randomize gravity so they fall at completely different speeds
-            body.gravityScale = Random.Range(0.2f, 5f);
-            
-            // 3. Randomize their scale so you can visually see the change
-            float randomSize = Random.Range(0.5f, 3f);
-            body.transform.localScale = new Vector3(randomSize, randomSize, 1f);
-            
-            // 4. Give them a tiny random rotation bump to make it look like a glitch
-            body.AddTorque(Random.Range(-50f, 50f));
+            foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+                // Exclude the Octocat and the Chicken
+                if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+                    
+                    // 1. Randomize mass for collision weight
+                    body.mass = Random.Range(0.1f, 100f);
+                    
+                    // 2. Randomize gravity so they fall at completely different speeds
+                    body.gravityScale = Random.Range(0.2f, 5f);
+                    
+                    // 3. Randomize their scale so you can visually see the change
+                    float randomSize = Random.Range(0.5f, 3f);
+                    body.transform.localScale = new Vector3(randomSize, randomSize, 1f);
+                    
+                    // 4. Give them a tiny random rotation bump to make it look like a glitch
+                    body.AddTorque(Random.Range(-50f, 50f));
+                }
+            }
         }
-    }
-}
 
+        if (Input.GetKey(KeyCode.Keypad9)) {
+            // Find all physics objects in the scene
+            foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+                
+                // Ensure we don't pull the Octocat itself or the dormant Chicken
+                if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+                    
+                    // Calculate the direction from the object to the Octocat
+                    Vector2 pullDirection = (transform.position - body.transform.position).normalized;
+                    
+                    // Apply a continuous force to drag them towards you
+                    body.AddForce(pullDirection * (body.mass * 15f));
+                }
+            }
+        }
+
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
+
+        // If we cross the right edge, instantly teleport to the left edge
+        if (viewportPos.x > 1.05f) {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(-0.05f, viewportPos.y, viewportPos.z));
+        }
+        // If we cross the left edge, instantly teleport to the right edge
+        else if (viewportPos.x < -0.05f) {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(1.05f, viewportPos.y, viewportPos.z));
+        }
+
+        if (Input.GetKeyDown(KeyCode.F1) && playerScript != null) {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPos.z = 0f;
+            Vector2 dir = (mouseWorldPos - playerScript.transform.position).normalized;
+            
+            GameObject egg = Instantiate(playerScript.eggPrefab, playerScript.transform.position + (Vector3)dir, Quaternion.identity);
+            egg.AddComponent<Rigidbody2D>().linearVelocity = dir * 15f;
+        }
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);

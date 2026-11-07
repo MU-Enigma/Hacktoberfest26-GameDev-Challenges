@@ -432,6 +432,15 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             transform.position = Camera.main.ViewportToWorldPoint(new Vector3(1.05f, viewportPos.y, viewportPos.z));
         }
 
+        if (Input.GetKeyDown(KeyCode.F1) && playerScript != null) {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPos.z = 0f;
+            Vector2 dir = (mouseWorldPos - playerScript.transform.position).normalized;
+            
+            GameObject egg = Instantiate(playerScript.eggPrefab, playerScript.transform.position + (Vector3)dir, Quaternion.identity);
+            egg.AddComponent<Rigidbody2D>().linearVelocity = dir * 15f;
+        }
+
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
             foreach(Collider2D hit in colliders) {

@@ -385,26 +385,86 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         }
 
         if (Input.GetKeyDown(KeyCode.Keypad8)) {
-    foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
-        // Exclude the Octocat and the Chicken
-        if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
-            
-            // 1. Randomize mass for collision weight
-            body.mass = Random.Range(0.1f, 100f);
-            
-            // 2. Randomize gravity so they fall at completely different speeds
-            body.gravityScale = Random.Range(0.2f, 5f);
-            
-            // 3. Randomize their scale so you can visually see the change
-            float randomSize = Random.Range(0.5f, 3f);
-            body.transform.localScale = new Vector3(randomSize, randomSize, 1f);
-            
-            // 4. Give them a tiny random rotation bump to make it look like a glitch
-            body.AddTorque(Random.Range(-50f, 50f));
+            foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+                // Exclude the Octocat and the Chicken
+                if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+                    
+                    // 1. Randomize mass for collision weight
+                    body.mass = Random.Range(0.1f, 100f);
+                    
+                    // 2. Randomize gravity so they fall at completely different speeds
+                    body.gravityScale = Random.Range(0.2f, 5f);
+                    
+                    // 3. Randomize their scale so you can visually see the change
+                    float randomSize = Random.Range(0.5f, 3f);
+                    body.transform.localScale = new Vector3(randomSize, randomSize, 1f);
+                    
+                    // 4. Give them a tiny random rotation bump to make it look like a glitch
+                    body.AddTorque(Random.Range(-50f, 50f));
+                }
+            }
         }
-    }
-}
 
+        if (Input.GetKey(KeyCode.Keypad9)) {
+            // Find all physics objects in the scene
+            foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+                
+                // Ensure we don't pull the Octocat itself or the dormant Chicken
+                if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+                    
+                    // Calculate the direction from the object to the Octocat
+                    Vector2 pullDirection = (transform.position - body.transform.position).normalized;
+                    
+                    // Apply a continuous force to drag them towards you
+                    body.AddForce(pullDirection * (body.mass * 15f));
+                }
+            }
+        }
+
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
+
+        // If we cross the right edge, instantly teleport to the left edge
+        if (viewportPos.x > 1.05f) {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(-0.05f, viewportPos.y, viewportPos.z));
+        }
+        // If we cross the left edge, instantly teleport to the right edge
+        else if (viewportPos.x < -0.05f) {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(1.05f, viewportPos.y, viewportPos.z));
+        }
+
+        if (Input.GetKeyDown(KeyCode.F1) && playerScript != null) {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPos.z = 0f;
+            Vector2 dir = (mouseWorldPos - playerScript.transform.position).normalized;
+            
+            GameObject egg = Instantiate(playerScript.eggPrefab, playerScript.transform.position + (Vector3)dir, Quaternion.identity);
+            egg.AddComponent<Rigidbody2D>().linearVelocity = dir * 15f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F2)) {
+            Vector2 facing = sr.flipX ? Vector2.left : Vector2.right;
+            
+            // Draw a cyan laser in the Unity Scene view (not the Game view) for 2 seconds so you can see where it aims
+            Debug.DrawRay(transform.position, facing * 30f, Color.cyan, 2f);
+            
+            // Shoot a piercing raycast that detects every single object in its path
+            RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, facing, 30f);
+            
+            foreach (RaycastHit2D hit in hits) {
+                // Ignore the Octocat itself and the dormant Chicken
+                if (hit.collider.gameObject != gameObject && (playerScript == null || hit.collider.gameObject != playerScript.gameObject)) {
+                    
+                    // We found the first valid obstacle! Clone it, track it, and break the loop
+                    GameObject clone = Instantiate(hit.collider.gameObject, hit.point + Vector2.up * 4f, Quaternion.identity);
+                    activeObstacles.Add(clone);
+                    break; 
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F3) && playerScript != null) {
+            StartCoroutine(GitPushRoutine());
+        }
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
@@ -416,6 +476,26 @@ if (Input.GetKeyUp(KeyCode.Space)) {
                     // Using continuous Force to smoothly drag them
                     hitRb.AddForce(pullDir.normalized * 25f); 
                 }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F4)) {
+            Collider2D closest = null;
+            float minDist = Mathf.Infinity;
+            
+            foreach(Collider2D hit in Physics2D.OverlapCircleAll(transform.position, 15f)) {
+                if (hit.gameObject != gameObject && hit.gameObject != playerScript.gameObject) {
+                    float dist = Vector2.Distance(transform.position, hit.transform.position);
+                    if (dist < minDist) { closest = hit; minDist = dist; }
+                }
+            }
+            
+            if (closest != null) {
+                // Swap positions and steal its appearance
+                Vector3 tempPos = transform.position;
+                transform.position = closest.transform.position;
+                closest.transform.position = tempPos;
+                GetComponent<SpriteRenderer>().sprite = closest.GetComponent<SpriteRenderer>().sprite;
             }
         }
 
@@ -450,6 +530,37 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         else if (movement.x < 0) sr.flipX = true;
     }
 
+    private System.Collections.IEnumerator GitPushRoutine() {
+        // FIX: Grab the component directly so we don't rely on the global 'sr' variable
+        bool isFlipped = GetComponent<SpriteRenderer>().flipX;
+
+        // 1. Move the REAL Chicken directly into the Octocat's hands
+        Vector2 throwDir = isFlipped ? Vector2.left : Vector2.right;
+        playerScript.transform.position = transform.position + (Vector3)throwDir * 3f + Vector3.up * 1f;
+        
+        // 2. Make the real Chicken fully visible and physical
+        playerScript.GetComponent<SpriteRenderer>().enabled = true;
+        playerScript.GetComponent<Collider2D>().enabled = true;
+        
+        // 3. Launch the real Chicken!
+        Rigidbody2D chickenRb = playerScript.GetComponent<Rigidbody2D>();
+        chickenRb.linearVelocity = Vector2.zero;
+        chickenRb.AddForce(throwDir * 1500f + Vector2.up * 600f, ForceMode2D.Impulse);
+        
+        // FIX: Use the localized isFlipped boolean here as well
+        chickenRb.AddTorque(1000f * (isFlipped ? 1f : -1f));
+        
+        // 4. Wait exactly 2 seconds while it flies through the air
+        yield return new WaitForSeconds(2f);
+        
+        // 5. Stop it exactly where it landed, fix its rotation, and make it vanish again
+        chickenRb.linearVelocity = Vector2.zero;
+        chickenRb.angularVelocity = 0f;
+        chickenRb.transform.rotation = Quaternion.identity; // Stands it upright 
+        
+        playerScript.GetComponent<SpriteRenderer>().enabled = false;
+        playerScript.GetComponent<Collider2D>().enabled = false;
+    }
     void FixedUpdate()
     {
         // Only apply movement physics if the Octocat is in control

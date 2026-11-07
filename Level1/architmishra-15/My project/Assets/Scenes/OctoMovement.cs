@@ -499,6 +499,15 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.F5)) {
+            Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Default"), true);
+            sr.color = new Color(1f, 1f, 1f, 0.3f);
+        }
+        if (Input.GetKeyUp(KeyCode.F5)) {
+            Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Default"), false);
+            sr.color = Color.white;
+        }
+
         if (Input.GetKeyDown(KeyCode.Alpha9) && playerScript != null) {
             // "Pull" the dormant main branch (Chicken) to your current location
             playerScript.transform.position = transform.position;

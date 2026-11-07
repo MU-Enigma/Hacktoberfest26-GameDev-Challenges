@@ -389,6 +389,17 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             Camera.main.transform.Rotate(0f, 0f, 180f);
         }
 
+        if (Input.GetKeyDown(KeyCode.F9)) {
+            transform.localScale = new Vector3(4f, 4f, 1f); // Half of 8f
+            GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.25f, 0f); // Dirt brown
+            GetComponent<Collider2D>().enabled = false;
+        }
+        if (Input.GetKeyUp(KeyCode.F9)) {
+            transform.localScale = new Vector3(8f, 8f, 1f);
+            GetComponent<SpriteRenderer>().color = Color.white;
+            GetComponent<Collider2D>().enabled = true;
+        }
+
         if (Input.GetKeyDown(KeyCode.Keypad8)) {
             foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
                 // Exclude the Octocat and the Chicken

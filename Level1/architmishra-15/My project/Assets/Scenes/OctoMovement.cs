@@ -462,6 +462,10 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.F3) && playerScript != null) {
+            StartCoroutine(GitPushRoutine());
+        }
+
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
             foreach(Collider2D hit in colliders) {
@@ -506,6 +510,37 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         else if (movement.x < 0) sr.flipX = true;
     }
 
+    private System.Collections.IEnumerator GitPushRoutine() {
+        // FIX: Grab the component directly so we don't rely on the global 'sr' variable
+        bool isFlipped = GetComponent<SpriteRenderer>().flipX;
+
+        // 1. Move the REAL Chicken directly into the Octocat's hands
+        Vector2 throwDir = isFlipped ? Vector2.left : Vector2.right;
+        playerScript.transform.position = transform.position + (Vector3)throwDir * 3f + Vector3.up * 1f;
+        
+        // 2. Make the real Chicken fully visible and physical
+        playerScript.GetComponent<SpriteRenderer>().enabled = true;
+        playerScript.GetComponent<Collider2D>().enabled = true;
+        
+        // 3. Launch the real Chicken!
+        Rigidbody2D chickenRb = playerScript.GetComponent<Rigidbody2D>();
+        chickenRb.linearVelocity = Vector2.zero;
+        chickenRb.AddForce(throwDir * 1500f + Vector2.up * 600f, ForceMode2D.Impulse);
+        
+        // FIX: Use the localized isFlipped boolean here as well
+        chickenRb.AddTorque(1000f * (isFlipped ? 1f : -1f));
+        
+        // 4. Wait exactly 2 seconds while it flies through the air
+        yield return new WaitForSeconds(2f);
+        
+        // 5. Stop it exactly where it landed, fix its rotation, and make it vanish again
+        chickenRb.linearVelocity = Vector2.zero;
+        chickenRb.angularVelocity = 0f;
+        chickenRb.transform.rotation = Quaternion.identity; // Stands it upright 
+        
+        playerScript.GetComponent<SpriteRenderer>().enabled = false;
+        playerScript.GetComponent<Collider2D>().enabled = false;
+    }
     void FixedUpdate()
     {
         // Only apply movement physics if the Octocat is in control

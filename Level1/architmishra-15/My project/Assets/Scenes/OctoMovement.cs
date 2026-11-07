@@ -424,6 +424,15 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             Destroy(rain, 4f);
         }
 
+        if (Input.GetKeyDown(KeyCode.F11)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    // Toggles the active state of the GameObject in the engine hierarchy
+                    obs.SetActive(!obs.activeSelf);
+                }
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Keypad8)) {
             foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
                 // Exclude the Octocat and the Chicken

@@ -508,6 +508,10 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             sr.color = Color.white;
         }
 
+        if (Input.GetKeyDown(KeyCode.F6)) {
+            Camera.main.transform.position += new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), 0);
+        }
+
         if (Input.GetKeyDown(KeyCode.Alpha9) && playerScript != null) {
             // "Pull" the dormant main branch (Chicken) to your current location
             playerScript.transform.position = transform.position;

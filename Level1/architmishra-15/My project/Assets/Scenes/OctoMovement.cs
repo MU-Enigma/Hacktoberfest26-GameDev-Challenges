@@ -390,6 +390,13 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             transform.position -= new Vector3(Vector2.Distance(Vector2.zero, transform.position) > 5f ? 5f : -5f, 0, 0);
         }
 
+        // git interrupt / Freeze State (Ctrl + C)
+        if (isCtrl && Input.GetKeyDown(KeyCode.C)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Rigidbody2D>().simulated = !obs.GetComponent<Rigidbody2D>().simulated;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.F8)) {
             // Physically barrel-roll the camera 180 degrees to bypass URP matrix overrides
             Camera.main.transform.Rotate(0f, 0f, 180f);

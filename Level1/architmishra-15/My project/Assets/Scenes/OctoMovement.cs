@@ -441,6 +441,27 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             egg.AddComponent<Rigidbody2D>().linearVelocity = dir * 15f;
         }
 
+        if (Input.GetKeyDown(KeyCode.F2)) {
+            Vector2 facing = sr.flipX ? Vector2.left : Vector2.right;
+            
+            // Draw a cyan laser in the Unity Scene view (not the Game view) for 2 seconds so you can see where it aims
+            Debug.DrawRay(transform.position, facing * 30f, Color.cyan, 2f);
+            
+            // Shoot a piercing raycast that detects every single object in its path
+            RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, facing, 30f);
+            
+            foreach (RaycastHit2D hit in hits) {
+                // Ignore the Octocat itself and the dormant Chicken
+                if (hit.collider.gameObject != gameObject && (playerScript == null || hit.collider.gameObject != playerScript.gameObject)) {
+                    
+                    // We found the first valid obstacle! Clone it, track it, and break the loop
+                    GameObject clone = Instantiate(hit.collider.gameObject, hit.point + Vector2.up * 4f, Quaternion.identity);
+                    activeObstacles.Add(clone);
+                    break; 
+                }
+            }
+        }
+
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
             foreach(Collider2D hit in colliders) {

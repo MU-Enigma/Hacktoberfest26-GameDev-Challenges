@@ -20,7 +20,6 @@ public class OctoMovement : MonoBehaviour
     private SpriteRenderer sr;
     private List<GameObject> activeObstacles = new List<GameObject>();
 
-
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -34,6 +33,8 @@ public class OctoMovement : MonoBehaviour
     void Update()
     {
 
+        bool isCtrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        bool isAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
         SpriteRenderer sr = GetComponent<SpriteRenderer>(); 
         // If the chicken is the active character, ignore all Octo inputs
         if (playerScript != null && playerScript.isMainCharacter) {
@@ -382,6 +383,11 @@ if (Input.GetKeyUp(KeyCode.Space)) {
                     hitRb.AddForce(Vector2.up * 800f, ForceMode2D.Impulse);
                 }
             }
+        }
+
+        // Git revert / Time Skip (Ctrl + Z)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Z)) {
+            transform.position -= new Vector3(Vector2.Distance(Vector2.zero, transform.position) > 5f ? 5f : -5f, 0, 0);
         }
 
         if (Input.GetKeyDown(KeyCode.F8)) {

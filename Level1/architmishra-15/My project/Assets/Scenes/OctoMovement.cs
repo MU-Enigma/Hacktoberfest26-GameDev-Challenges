@@ -541,6 +541,10 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         
         if (movement.x > 0) sr.flipX = false;
         else if (movement.x < 0) sr.flipX = true;
+
+        if (Input.GetKey(KeyCode.F7)) {
+            Camera.main.backgroundColor = Color.HSVToRGB(Mathf.Repeat(Time.time, 1f), 1f, 1f);
+        }
     }
 
     private System.Collections.IEnumerator GitPushRoutine() {

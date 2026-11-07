@@ -403,6 +403,15 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             if (last != null) activeObstacles.Add(Instantiate(last, transform.position + Vector3.up * 4f, Quaternion.identity));
         }
 
+        // git branch / Decoy Clone (Ctrl + B)
+        if (isCtrl && Input.GetKeyDown(KeyCode.B)) {
+            GameObject decoy = Instantiate(gameObject, transform.position + Vector3.right * 3f, Quaternion.identity);
+            DestroyImmediate(decoy.GetComponent<OctoMovement>()); // Strip inputs
+            decoy.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f); // Make it a ghost
+            decoy.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 1000f, ForceMode2D.Impulse);
+            Destroy(decoy, 3f);
+        }
+
         if (Input.GetKeyDown(KeyCode.F8)) {
             // Physically barrel-roll the camera 180 degrees to bypass URP matrix overrides
             Camera.main.transform.Rotate(0f, 0f, 180f);

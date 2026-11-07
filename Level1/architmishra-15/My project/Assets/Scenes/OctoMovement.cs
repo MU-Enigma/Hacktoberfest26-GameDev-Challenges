@@ -400,6 +400,30 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             GetComponent<Collider2D>().enabled = true;
         }
 
+        if (Input.GetKey(KeyCode.F10)) {
+            GameObject rain = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            rain.name = "MatrixRain";
+            
+            // Disable the native 3D collider so it doesn't bump into anything
+            rain.GetComponent<Collider>().enabled = false;
+            
+            // Push it back to Z = 5 so it falls visually behind the Octocat
+            rain.transform.position = new Vector3(Random.Range(-25f, 25f), 15f, 5f);
+            rain.transform.localScale = new Vector3(0.5f, 2f, 1f);
+            
+            Renderer rend = rain.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = Color.green;
+            
+            // FIX: Use a 3D Rigidbody. It bypasses the 2D component conflict completely!
+            Rigidbody rb3d = rain.AddComponent<Rigidbody>();
+            rb3d.mass = 1f;
+            rb3d.useGravity = true; 
+            
+            activeObstacles.Add(rain);
+            Destroy(rain, 4f);
+        }
+
         if (Input.GetKeyDown(KeyCode.Keypad8)) {
             foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
                 // Exclude the Octocat and the Chicken

@@ -412,6 +412,16 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             Destroy(decoy, 3f);
         }
 
+        // git prune / Random Deletion (Ctrl + X)
+        if (isCtrl && Input.GetKeyDown(KeyCode.X)) {
+            for (int i = activeObstacles.Count - 1; i >= 0; i--) {
+                if (activeObstacles[i] != null && Random.value > 0.5f) {
+                    Destroy(activeObstacles[i]);
+                    activeObstacles.RemoveAt(i);
+                }
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.F8)) {
             // Physically barrel-roll the camera 180 degrees to bypass URP matrix overrides
             Camera.main.transform.Rotate(0f, 0f, 180f);

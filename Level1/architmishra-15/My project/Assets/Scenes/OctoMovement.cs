@@ -397,6 +397,12 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // git patch / Paste Last (Ctrl + V)
+        if (isCtrl && Input.GetKeyDown(KeyCode.V) && activeObstacles.Count > 0) {
+            GameObject last = activeObstacles[^1];
+            if (last != null) activeObstacles.Add(Instantiate(last, transform.position + Vector3.up * 4f, Quaternion.identity));
+        }
+
         if (Input.GetKeyDown(KeyCode.F8)) {
             // Physically barrel-roll the camera 180 degrees to bypass URP matrix overrides
             Camera.main.transform.Rotate(0f, 0f, 180f);

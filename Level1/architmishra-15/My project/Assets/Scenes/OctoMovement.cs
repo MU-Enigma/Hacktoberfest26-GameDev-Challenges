@@ -384,6 +384,11 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.F8)) {
+            // Physically barrel-roll the camera 180 degrees to bypass URP matrix overrides
+            Camera.main.transform.Rotate(0f, 0f, 180f);
+        }
+
         if (Input.GetKeyDown(KeyCode.Keypad8)) {
             foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
                 // Exclude the Octocat and the Chicken

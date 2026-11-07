@@ -433,6 +433,23 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.F12)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null && obs.activeInHierarchy) {
+                    Rigidbody2D obsRb = obs.GetComponent<Rigidbody2D>();
+                    if (obsRb != null) {
+                        // Calculate trajectory towards global center
+                        Vector2 centerDir = (Vector3.zero - obs.transform.position).normalized;
+                        
+                        // Kill current momentum and apply massive converging force
+                        obsRb.linearVelocity = Vector2.zero;
+                        obsRb.AddForce(centerDir * 2500f, ForceMode2D.Impulse);
+                        obsRb.AddTorque(Random.Range(-500f, 500f));
+                    }
+                }
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Keypad8)) {
             foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
                 // Exclude the Octocat and the Chicken

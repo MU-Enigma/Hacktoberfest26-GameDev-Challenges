@@ -421,6 +421,16 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
+
+        // If we cross the right edge, instantly teleport to the left edge
+        if (viewportPos.x > 1.05f) {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(-0.05f, viewportPos.y, viewportPos.z));
+        }
+        // If we cross the left edge, instantly teleport to the right edge
+        else if (viewportPos.x < -0.05f) {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(1.05f, viewportPos.y, viewportPos.z));
+        }
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);

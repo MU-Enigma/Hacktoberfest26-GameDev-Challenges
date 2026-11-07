@@ -479,6 +479,26 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (Input.GetKeyDown(KeyCode.F4)) {
+            Collider2D closest = null;
+            float minDist = Mathf.Infinity;
+            
+            foreach(Collider2D hit in Physics2D.OverlapCircleAll(transform.position, 15f)) {
+                if (hit.gameObject != gameObject && hit.gameObject != playerScript.gameObject) {
+                    float dist = Vector2.Distance(transform.position, hit.transform.position);
+                    if (dist < minDist) { closest = hit; minDist = dist; }
+                }
+            }
+            
+            if (closest != null) {
+                // Swap positions and steal its appearance
+                Vector3 tempPos = transform.position;
+                transform.position = closest.transform.position;
+                closest.transform.position = tempPos;
+                GetComponent<SpriteRenderer>().sprite = closest.GetComponent<SpriteRenderer>().sprite;
+            }
+        }
+
         if (Input.GetKeyDown(KeyCode.Alpha9) && playerScript != null) {
             // "Pull" the dormant main branch (Chicken) to your current location
             playerScript.transform.position = transform.position;

@@ -10,7 +10,16 @@ public class MetalRoar : MonoBehaviour
 
     void Awake()
     {
-        ring = gameObject.AddComponent<LineRenderer>();
+        EnsureRing();
+    }
+
+    void EnsureRing()
+    {
+        if (ring != null) return;
+        var obj = new GameObject("MetalRoarVisual");
+        obj.transform.SetParent(transform);
+        obj.transform.localPosition = Vector3.zero;
+        ring = obj.AddComponent<LineRenderer>();
         ring.positionCount = 36;
         ring.startWidth = 0.15f;
         ring.endWidth = 0.15f;
@@ -47,13 +56,14 @@ public class MetalRoar : MonoBehaviour
             if (ringTimer <= 0f)
             {
                 isRoaring = false;
-                ring.enabled = false;
+                if (ring != null) ring.enabled = false;
             }
         }
     }
 
     void DrawRing(Vector3 center, float radius)
     {
+        if (ring == null) EnsureRing();
         for (int i = 0; i < 36; i++)
         {
             float rad = i * (Mathf.PI * 2f / 36f);
@@ -65,10 +75,11 @@ public class MetalRoar : MonoBehaviour
     public void DoRoar()
     {
         if (cooldownTimer > 0f) return;
+        EnsureRing();
         isRoaring = true;
         ringTimer = 0.6f;
         currentRadius = 0.2f;
-        ring.enabled = true;
+        if (ring != null) ring.enabled = true;
         cooldownTimer = 5f;
     }
 }

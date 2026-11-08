@@ -9,7 +9,16 @@ public class SonicBurp : MonoBehaviour
 
     void Awake()
     {
-        wave = gameObject.AddComponent<LineRenderer>();
+        EnsureWave();
+    }
+
+    void EnsureWave()
+    {
+        if (wave != null) return;
+        var obj = new GameObject("SonicBurpVisual");
+        obj.transform.SetParent(transform);
+        obj.transform.localPosition = Vector3.zero;
+        wave = obj.AddComponent<LineRenderer>();
         wave.positionCount = 10;
         wave.startWidth = 0.2f;
         wave.endWidth = 0.8f;
@@ -31,6 +40,7 @@ public class SonicBurp : MonoBehaviour
         if (isBurping)
         {
             burpTimer -= Time.deltaTime;
+            if (wave == null) EnsureWave();
             for (int i = 0; i < 10; i++)
             {
                 float t = i / 9f;
@@ -46,7 +56,7 @@ public class SonicBurp : MonoBehaviour
             if (burpTimer <= 0f)
             {
                 isBurping = false;
-                wave.enabled = false;
+                if (wave != null) wave.enabled = false;
             }
         }
     }
@@ -54,9 +64,10 @@ public class SonicBurp : MonoBehaviour
     public void DoBurp()
     {
         if (cooldownTimer > 0f) return;
+        EnsureWave();
         isBurping = true;
         burpTimer = 0.6f;
-        wave.enabled = true;
+        if (wave != null) wave.enabled = true;
         cooldownTimer = 5f;
     }
 }

@@ -9,7 +9,16 @@ public class FreezeBreath : MonoBehaviour
 
     void Awake()
     {
-        frostLine = gameObject.AddComponent<LineRenderer>();
+        EnsureFrostLine();
+    }
+
+    void EnsureFrostLine()
+    {
+        if (frostLine != null) return;
+        var obj = new GameObject("FreezeBreathVisual");
+        obj.transform.SetParent(transform);
+        obj.transform.localPosition = Vector3.zero;
+        frostLine = obj.AddComponent<LineRenderer>();
         frostLine.positionCount = 3;
         frostLine.startWidth = 0.2f;
         frostLine.endWidth = 1.2f;
@@ -31,6 +40,7 @@ public class FreezeBreath : MonoBehaviour
         if (isFreezing)
         {
             frostTimer -= Time.deltaTime;
+            if (frostLine == null) EnsureFrostLine();
             frostLine.SetPosition(0, transform.position);
             frostLine.SetPosition(1, transform.position + Vector3.right * 2.5f + Vector3.up * 0.8f);
             frostLine.SetPosition(2, transform.position + Vector3.right * 4f);
@@ -45,7 +55,7 @@ public class FreezeBreath : MonoBehaviour
             if (frostTimer <= 0f)
             {
                 isFreezing = false;
-                frostLine.enabled = false;
+                if (frostLine != null) frostLine.enabled = false;
             }
         }
     }
@@ -53,9 +63,10 @@ public class FreezeBreath : MonoBehaviour
     public void ExhaleFrost()
     {
         if (cooldownTimer > 0f) return;
+        EnsureFrostLine();
         isFreezing = true;
         frostTimer = 2.5f;
-        frostLine.enabled = true;
+        if (frostLine != null) frostLine.enabled = true;
         cooldownTimer = 7f;
     }
 }

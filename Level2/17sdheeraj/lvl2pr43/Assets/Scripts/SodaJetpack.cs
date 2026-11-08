@@ -10,7 +10,16 @@ public class SodaJetpack : MonoBehaviour
 
     void Awake()
     {
-        trail = gameObject.AddComponent<TrailRenderer>();
+        EnsureTrail();
+    }
+
+    void EnsureTrail()
+    {
+        if (trail != null) return;
+        var obj = new GameObject("SodaJetpackVisual");
+        obj.transform.SetParent(transform);
+        obj.transform.localPosition = Vector3.zero;
+        trail = obj.AddComponent<TrailRenderer>();
         trail.time = 0.3f;
         trail.startWidth = 0.35f;
         trail.endWidth = 0.05f;
@@ -37,7 +46,7 @@ public class SodaJetpack : MonoBehaviour
             if (dashTimer <= 0f)
             {
                 isJetpacking = false;
-                trail.enabled = false;
+                if (trail != null) trail.enabled = false;
             }
         }
     }
@@ -45,6 +54,7 @@ public class SodaJetpack : MonoBehaviour
     public void LaunchSoda()
     {
         if (cooldownTimer > 0f) return;
+        EnsureTrail();
         Vector3 m = Camera.main != null ? Camera.main.ScreenToWorldPoint(Input.mousePosition) : transform.position + Vector3.right;
         m.z = 0f;
         dashDir = (m - transform.position).normalized;
@@ -52,7 +62,7 @@ public class SodaJetpack : MonoBehaviour
 
         isJetpacking = true;
         dashTimer = 0.35f;
-        trail.enabled = true;
+        if (trail != null) trail.enabled = true;
         cooldownTimer = 5f;
     }
 }

@@ -8,7 +8,16 @@ public class RainbowDash : MonoBehaviour
 
     void Awake()
     {
-        rainbowTrail = gameObject.AddComponent<TrailRenderer>();
+        EnsureRainbowTrail();
+    }
+
+    void EnsureRainbowTrail()
+    {
+        if (rainbowTrail != null) return;
+        var obj = new GameObject("RainbowDashVisual");
+        obj.transform.SetParent(transform);
+        obj.transform.localPosition = Vector3.zero;
+        rainbowTrail = obj.AddComponent<TrailRenderer>();
         rainbowTrail.time = 0.5f;
         rainbowTrail.startWidth = 0.4f;
         rainbowTrail.endWidth = 0.1f;
@@ -31,7 +40,9 @@ public class RainbowDash : MonoBehaviour
     public void DoDash()
     {
         if (cooldownTimer > 0f) return;
-        rainbowTrail.enabled = true;
+        EnsureRainbowTrail();
+        if (rainbowTrail != null) rainbowTrail.enabled = true;
+        isDashing = true;
         transform.position += Vector3.right * 3.5f;
         cooldownTimer = 4f;
         Invoke("EndDash", 0.6f);

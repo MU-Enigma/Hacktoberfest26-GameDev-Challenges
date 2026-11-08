@@ -9,7 +9,16 @@ public class ContagiousYawn : MonoBehaviour
 
     void Awake()
     {
-        yawnAura = gameObject.AddComponent<LineRenderer>();
+        EnsureYawnAura();
+    }
+
+    void EnsureYawnAura()
+    {
+        if (yawnAura != null) return;
+        var obj = new GameObject("ContagiousYawnVisual");
+        obj.transform.SetParent(transform);
+        obj.transform.localPosition = Vector3.zero;
+        yawnAura = obj.AddComponent<LineRenderer>();
         yawnAura.positionCount = 36;
         yawnAura.startWidth = 0.12f;
         yawnAura.endWidth = 0.12f;
@@ -34,6 +43,7 @@ public class ContagiousYawn : MonoBehaviour
         {
             yawnTimer -= Time.deltaTime;
             float r = (2.5f - yawnTimer) * 2.5f;
+            if (yawnAura == null) EnsureYawnAura();
             for (int i = 0; i < 36; i++)
             {
                 float rad = i * (Mathf.PI * 2f / 36f);
@@ -50,7 +60,7 @@ public class ContagiousYawn : MonoBehaviour
             if (yawnTimer <= 0f)
             {
                 isYawning = false;
-                yawnAura.enabled = false;
+                if (yawnAura != null) yawnAura.enabled = false;
             }
         }
     }
@@ -58,9 +68,10 @@ public class ContagiousYawn : MonoBehaviour
     public void DoYawn()
     {
         if (cooldownTimer > 0f) return;
+        EnsureYawnAura();
         isYawning = true;
         yawnTimer = 2.5f;
-        yawnAura.enabled = true;
+        if (yawnAura != null) yawnAura.enabled = true;
         cooldownTimer = 8f;
     }
 }

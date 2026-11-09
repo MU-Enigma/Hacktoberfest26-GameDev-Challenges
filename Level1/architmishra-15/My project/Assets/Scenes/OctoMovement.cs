@@ -976,6 +976,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 9. git fsck / Gyroscopic Auto-Leveler (Ctrl + F5)
+        if (isCtrl && Input.GetKeyDown(KeyCode.F5)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.angularVelocity = 0f;
+                        obs.transform.rotation = Quaternion.identity;
+                    }
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

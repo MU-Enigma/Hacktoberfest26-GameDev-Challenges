@@ -1,8 +1,20 @@
 
 using UnityEngine;
+using System.Collections;
 
 public class BouncePad : MonoBehaviour
 {
+    IEnumerator CooldownRoutine()
+    {
+    yield return new WaitForSeconds(cooldownDuration);
+
+    isOnCooldown = false;
+
+    if (spriteRenderer != null)
+        spriteRenderer.color = normalColor;
+
+    Debug.Log("Bounce pad is ready again!");
+    }
     [Header("Bounce Settings")]
     public float bounceForce = 14f;
     public float burgerBounceForce = 10f;
@@ -12,6 +24,10 @@ public class BouncePad : MonoBehaviour
     public Color activatedColor = Color.yellow;
 
     private SpriteRenderer spriteRenderer;
+    private bool isOnCooldown = false;
+
+    [Header("Cooldown Settings")]
+    public float cooldownDuration = 3f;
 
     void Awake()
     {
@@ -22,39 +38,40 @@ public class BouncePad : MonoBehaviour
     }
 
     void OnCollisionEnter2D(Collision2D collision)
-    {
-        GameObject hitObject = collision.gameObject;
+{
+    if (isOnCooldown)
+        return;
 
-        bool isPlayer = hitObject.CompareTag("Player");
-        bool isBurger = hitObject.name == "Spawned Burger";
+    GameObject hitObject = collision.gameObject;
 
-        if (!isPlayer && !isBurger)
-            return;
+    bool isPlayer = hitObject.CompareTag("Player");
+    bool isBurger = hitObject.name == "Spawned Burger";
 
-        Rigidbody2D rb = hitObject.GetComponent<Rigidbody2D>();
+    if (!isPlayer && !isBurger)
+        return;
 
-        if (rb == null)
-            return;
+    Rigidbody2D rb = hitObject.GetComponent<Rigidbody2D>();
 
-        float force = isPlayer ? bounceForce : burgerBounceForce;
+    if (rb == null)
+        return;
 
-        // Bounce the player or burger upward.
-        rb.linearVelocity = new Vector2(
-            rb.linearVelocity.x,
-            force
-        );
+    float force = isPlayer ? bounceForce : burgerBounceForce;
 
-        if (spriteRenderer != null)
-        {
-            spriteRenderer.color = activatedColor;
-            CancelInvoke(nameof(ResetColor));
-            Invoke(nameof(ResetColor), 0.25f);
-        }
+    rb.linearVelocity = new Vector2(
+        rb.linearVelocity.x,
+        force
+    );
 
-        Debug.Log(isPlayer
-            ? "Bounce pad activated by player!"
-            : "Bounce pad activated by burger!");
-    }
+    if (spriteRenderer != null)
+        spriteRenderer.color = activatedColor;
+
+    isOnCooldown = true;
+    StartCoroutine(CooldownRoutine());
+
+    Debug.Log(isPlayer
+        ? "Bounce pad activated by player!"
+        : "Bounce pad activated by burger!");
+}
 
     void ResetColor()
     {

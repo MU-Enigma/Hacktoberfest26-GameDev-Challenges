@@ -35,6 +35,10 @@ public class OctoMovement : MonoBehaviour
 
         bool isCtrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
         bool isAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+
+        bool isCtrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        bool isAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+        bool isShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         SpriteRenderer sr = GetComponent<SpriteRenderer>(); 
         // If the chicken is the active character, ignore all Octo inputs
         if (playerScript != null && playerScript.isMainCharacter) {
@@ -484,6 +488,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isCtrl && isShift && Input.GetKeyDown(KeyCode.F)) {
+            Vector2 hurricaneForce = new Vector2(sr.flipX ? -4000f : 4000f, 500f);
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = Vector2.zero;
+                        rb.AddForce(hurricaneForce, ForceMode2D.Impulse);
+                    }
+                }
+            }
+        }
+
         if (isAlt && Input.GetKeyDown(KeyCode.L)) {
             GameObject crumb = GameObject.CreatePrimitive(PrimitiveType.Cube);
             DestroyImmediate(crumb.GetComponent<Collider>());
@@ -531,6 +548,8 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             if (playerScript != null) Destroy(playerScript.gameObject);
             Destroy(gameObject); // Deletes the Octocat entirely!
         }
+
+
 
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {

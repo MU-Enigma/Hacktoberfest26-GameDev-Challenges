@@ -1002,6 +1002,14 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 11. git rm --cached / Orphan Entities (Ctrl + Shift + R)
+        if (isCtrl && isShift && Input.GetKeyDown(KeyCode.R)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Renderer>().material.color = Color.gray;
+            }
+            activeObstacles.Clear(); // Clears the list without destroying the physical objects
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

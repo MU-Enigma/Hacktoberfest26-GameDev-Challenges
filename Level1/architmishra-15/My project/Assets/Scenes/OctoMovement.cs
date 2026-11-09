@@ -873,6 +873,20 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 1. git add . / The Staging Area (Ctrl + A)
+        if (isCtrl && Input.GetKeyDown(KeyCode.A)) {
+            float angle = 0f;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    float x = transform.position.x + Mathf.Cos(angle) * 5f;
+                    float y = transform.position.y + Mathf.Sin(angle) * 5f;
+                    obs.transform.position = new Vector3(x, y, 0f);
+                    obs.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+                    angle += (Mathf.PI * 2f) / activeObstacles.Count;
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

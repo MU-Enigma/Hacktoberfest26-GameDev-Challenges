@@ -924,6 +924,22 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 5. git clone --depth 1 / Proximity Duplication (Ctrl + 1)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Alpha1)) {
+            GameObject closest = null;
+            float minDist = Mathf.Infinity;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    float dist = Vector2.Distance(transform.position, obs.transform.position);
+                    if (dist < minDist) { minDist = dist; closest = obs; }
+                }
+            }
+            if (closest != null) {
+                GameObject clone = Instantiate(closest, closest.transform.position + Vector3.up * 3f, Quaternion.identity);
+                activeObstacles.Add(clone);
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

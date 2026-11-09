@@ -437,6 +437,18 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isCtrl && Input.GetKeyDown(KeyCode.P)) {
+            GameObject closest = null;
+            float minDist = Mathf.Infinity;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    float dist = Vector2.Distance(transform.position, obs.transform.position);
+                    if (dist < minDist) { minDist = dist; closest = obs; }
+                }
+            }
+            if (closest != null) closest.transform.position = transform.position + Vector3.up * 3f;
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

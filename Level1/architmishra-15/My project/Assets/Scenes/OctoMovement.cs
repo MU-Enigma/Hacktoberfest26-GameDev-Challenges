@@ -1033,6 +1033,15 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 15. git mv / X-Axis Mirror (Ctrl + Alt + M)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.M)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    obs.transform.position = new Vector3(-obs.transform.position.x, obs.transform.position.y, 0f);
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

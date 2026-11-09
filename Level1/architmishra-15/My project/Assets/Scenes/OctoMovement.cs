@@ -1026,6 +1026,13 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             if (myRb != null) myRb.linearVelocity = Vector2.zero;
         }
 
+        // 14. git show / Maximum Verbosity (Ctrl + Shift + S)
+        if (isCtrl && isShift && Input.GetKeyDown(KeyCode.S)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.transform.localScale = new Vector3(5f, 5f, 1f);
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

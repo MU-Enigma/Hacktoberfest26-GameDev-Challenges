@@ -1042,6 +1042,16 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 16. git revert HEAD / Velocity Inversion (Ctrl + Alt + Z)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.Z)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) rb.linearVelocity *= -1f;
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

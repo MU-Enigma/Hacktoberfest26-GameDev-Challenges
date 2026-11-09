@@ -853,6 +853,26 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 7. git blame --porcelain / The Interrogation Spotlight (Alt + P)
+        if (isAlt && Input.GetKeyDown(KeyCode.P)) {
+            if (activeObstacles.Count > 0) {
+                // Pick one completely random active obstacle
+                GameObject target = activeObstacles[Random.Range(0, activeObstacles.Count)];
+                if (target != null) {
+                    // Mutate it to draw attention
+                    target.transform.localScale *= 2f;
+                    target.GetComponent<Renderer>().material.color = Color.cyan;
+
+                    Rigidbody2D rb = target.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = Vector2.zero;
+                        rb.AddForce(Vector2.up * 1500f, ForceMode2D.Impulse);
+                        rb.AddTorque(800f);
+                    }
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

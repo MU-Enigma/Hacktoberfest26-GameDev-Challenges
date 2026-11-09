@@ -1010,6 +1010,15 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             activeObstacles.Clear(); // Clears the list without destroying the physical objects
         }
 
+        // 12. git blame --line / The Plumb Bob (Alt + Shift + DownArrow)
+        if (isAlt && isShift && Input.GetKeyDown(KeyCode.DownArrow)) {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 50f);
+            if (hit.collider != null && hit.collider.gameObject != gameObject && (playerScript == null || hit.collider.gameObject != playerScript.gameObject)) {
+                hit.collider.GetComponent<Renderer>().material.color = Color.yellow;
+                hit.collider.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 2000f, ForceMode2D.Impulse);
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

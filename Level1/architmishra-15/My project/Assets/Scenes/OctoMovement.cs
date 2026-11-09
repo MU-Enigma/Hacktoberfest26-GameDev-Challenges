@@ -520,6 +520,12 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.S)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 500f, ForceMode2D.Impulse);
+            }
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

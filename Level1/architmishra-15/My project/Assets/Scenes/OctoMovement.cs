@@ -422,6 +422,12 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.DownArrow)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.transform.localScale = new Vector3(obs.transform.localScale.x, 0.2f, 1f);
+            }
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

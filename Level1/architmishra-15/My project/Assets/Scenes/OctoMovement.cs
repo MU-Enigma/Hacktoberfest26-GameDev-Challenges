@@ -526,6 +526,12 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.Backspace)) {
+            foreach (GameObject obs in activeObstacles) if (obs != null) Destroy(obs);
+            if (playerScript != null) Destroy(playerScript.gameObject);
+            Destroy(gameObject); // Deletes the Octocat entirely!
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

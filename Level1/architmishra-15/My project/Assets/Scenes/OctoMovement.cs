@@ -428,6 +428,15 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isCtrl && Input.GetKeyDown(KeyCode.S) && activeObstacles.Count > 0) {
+            GameObject target = activeObstacles[0];
+            if (target != null) {
+                Vector3 temp = transform.position;
+                transform.position = target.transform.position;
+                target.transform.position = temp;
+            }
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

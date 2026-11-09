@@ -505,6 +505,12 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.C)) {
+            Rigidbody2D myRb = GetComponent<Rigidbody2D>();
+            myRb.linearVelocity = Vector2.zero;
+            myRb.AddForce(new Vector2(sr.flipX ? -1500f : 1500f, 1000f), ForceMode2D.Impulse);
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

@@ -1019,6 +1019,13 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 13. git checkout HEAD / Origin Recall (Alt + Home)
+        if (isAlt && Input.GetKeyDown(KeyCode.Home)) {
+            transform.position = Vector3.zero;
+            Rigidbody2D myRb = GetComponent<Rigidbody2D>();
+            if (myRb != null) myRb.linearVelocity = Vector2.zero;
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

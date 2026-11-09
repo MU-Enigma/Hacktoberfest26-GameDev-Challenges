@@ -17,8 +17,6 @@ public class PlayerColorChanger : MonoBehaviour
     private int currentColorIndex = 0;
     public bool IsDefaultColor => currentColorIndex == 0;
 
-    public bool IsDefaultColor => currentColorIndex == 0;
-
     void Awake()
     {
         spriteRenderers = GetComponentsInChildren<SpriteRenderer>(true);

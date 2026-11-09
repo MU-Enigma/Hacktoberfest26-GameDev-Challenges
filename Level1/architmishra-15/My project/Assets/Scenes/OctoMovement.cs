@@ -810,6 +810,14 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             Destroy(branch, 2f);
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.X)) {
+            if (activeObstacles.Count > 0) {
+                GameObject lastObs = activeObstacles[^1];
+                if (lastObs != null) Destroy(lastObs);
+                activeObstacles.RemoveAt(activeObstacles.Count - 1);
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

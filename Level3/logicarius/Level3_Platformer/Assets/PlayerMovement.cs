@@ -13,6 +13,8 @@ public class PlayerMovement : MonoBehaviour {
     void Awake() {
         if (body == null) body = GetComponent<Rigidbody2D>();
         body.freezeRotation = true;
+        body.interpolation = RigidbodyInterpolation2D.Interpolate;   // smooth movement between physics steps
+        QualitySettings.vSyncCount = 1;                              // no tearing
         body.sleepMode = RigidbodySleepMode2D.NeverSleep;
     }
 

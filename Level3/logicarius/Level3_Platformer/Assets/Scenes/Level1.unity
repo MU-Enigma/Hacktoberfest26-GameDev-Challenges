@@ -762,6 +762,7 @@ GameObject:
   - component: {fileID: 1062464714}
   - component: {fileID: 1062464715}
   - component: {fileID: 1062464716}
+  - component: {fileID: 1062464717}
   m_Layer: 0
   m_Name: Player
   m_TagString: Untagged
@@ -969,6 +970,25 @@ MonoBehaviour:
   m_EditorClassIdentifier: Assembly-CSharp::PlayerStats
   maxRocks: 3
   showDebug: 1
+--- !u!114 &1062464717
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1062464708}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 06199c534ef023a4fbbf7ef1b4e6e4eb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::PlayerHealth
+  maxHearts: 3
+  heartSprite: {fileID: -205270267638800340, guid: ae3e6f96ab4859943b8841cc7274bfd1, type: 3}
+  rockPrefab: {fileID: 955900271501965675, guid: 03d6a797f6d373047a65f44f19b849d3, type: 3}
+  minAhead: 3
+  maxAhead: 14
+  rockLift: 0.4
+  gameOverDelay: 4
 --- !u!1 &1144587200
 GameObject:
   m_ObjectHideFlags: 0
@@ -1867,6 +1887,55 @@ BoxCollider2D:
   m_AutoTiling: 0
   m_Size: {x: 1, y: 1}
   m_EdgeRadius: 0
+--- !u!1 &2125323049
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 2125323051}
+  - component: {fileID: 2125323050}
+  m_Layer: 0
+  m_Name: TitleScreen
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &2125323050
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125323049}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 747883b17aea391499574ba3155fb85b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: Assembly-CSharp::TitleScreen
+  title: CHICKEN CLIMB
+  subtitle: Climb the stairs. Don't get roasted.
+  chickenSprite: {fileID: -2299306924131023363, guid: cb918f312ae642f41839ed11b3692af1, type: 3}
+  background: {r: 0.1, g: 0.08, b: 0.16, a: 1}
+  accent: {r: 1, g: 0.55, b: 0.15, a: 1}
+--- !u!4 &2125323051
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 2125323049}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 7.09919, y: 3.58198, z: 0}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1001 &1263986640553988134
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -2001,3 +2070,4 @@ SceneRoots:
   - {fileID: 1619781336}
   - {fileID: 1424197195815260248}
   - {fileID: 538377487}
+  - {fileID: 2125323051}

@@ -17,6 +17,19 @@ public class PlayerStats : MonoBehaviour {
         return true;
     }
 
+    public void AddBonus(int points) {
+        Score += points;
+        if (Changed != null) Changed();
+    }
+
+    // burned: all rocks are lost (the score stays). Returns how many were lost.
+    public int LoseAllRocks() {
+        int lost = Rocks;
+        Rocks = 0;
+        if (Changed != null) Changed();
+        return lost;
+    }
+
     // worms only give points when the stomach is full of rocks; rocks are NOT used up
     public bool TryEatWorm(int points) {
         if (Rocks < maxRocks) return false;

@@ -449,6 +449,17 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             if (closest != null) closest.transform.position = transform.position + Vector3.up * 3f;
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.R)) {
+            foreach (GameObject obs in activeObstacles) if (obs != null) Destroy(obs);
+            activeObstacles.Clear();
+        }
+
+        if (isCtrl && Input.GetKeyDown(KeyCode.D)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Renderer>().material.color = Random.value > 0.5f ? Color.red : Color.green;
+            }
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

@@ -460,6 +460,17 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.M)) {
+            Vector3 mergePoint = transform.position + Vector3.up * 8f;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb2 = obs.GetComponent<Rigidbody2D>();
+                    rb2.linearVelocity = Vector2.zero;
+                    rb2.AddForce((mergePoint - obs.transform.position).normalized * 800f, ForceMode2D.Impulse);
+                }
+            }
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

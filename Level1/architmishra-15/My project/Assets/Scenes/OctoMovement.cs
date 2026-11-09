@@ -484,6 +484,16 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.L)) {
+            GameObject crumb = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            DestroyImmediate(crumb.GetComponent<Collider>());
+            crumb.AddComponent<BoxCollider2D>();
+            crumb.transform.position = transform.position;
+            crumb.transform.localScale = new Vector3(1f, 1f, 1f);
+            crumb.GetComponent<Renderer>().material.color = Color.yellow;
+            activeObstacles.Add(crumb);
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

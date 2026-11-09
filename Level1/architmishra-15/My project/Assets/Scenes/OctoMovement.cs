@@ -20,7 +20,6 @@ public class OctoMovement : MonoBehaviour
     private SpriteRenderer sr;
     private List<GameObject> activeObstacles = new List<GameObject>();
 
-
     void Start()
     {
         rb = GetComponent<Rigidbody2D>();
@@ -34,6 +33,12 @@ public class OctoMovement : MonoBehaviour
     void Update()
     {
 
+        bool isCtrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        bool isAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+
+        bool isCtrl = Input.GetKey(KeyCode.LeftControl) || Input.GetKey(KeyCode.RightControl);
+        bool isAlt = Input.GetKey(KeyCode.LeftAlt) || Input.GetKey(KeyCode.RightAlt);
+        bool isShift = Input.GetKey(KeyCode.LeftShift) || Input.GetKey(KeyCode.RightShift);
         SpriteRenderer sr = GetComponent<SpriteRenderer>(); 
         // If the chicken is the active character, ignore all Octo inputs
         if (playerScript != null && playerScript.isMainCharacter) {
@@ -384,27 +389,360 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
-        if (Input.GetKeyDown(KeyCode.Keypad8)) {
-    foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
-        // Exclude the Octocat and the Chicken
-        if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
-            
-            // 1. Randomize mass for collision weight
-            body.mass = Random.Range(0.1f, 100f);
-            
-            // 2. Randomize gravity so they fall at completely different speeds
-            body.gravityScale = Random.Range(0.2f, 5f);
-            
-            // 3. Randomize their scale so you can visually see the change
-            float randomSize = Random.Range(0.5f, 3f);
-            body.transform.localScale = new Vector3(randomSize, randomSize, 1f);
-            
-            // 4. Give them a tiny random rotation bump to make it look like a glitch
-            body.AddTorque(Random.Range(-50f, 50f));
+        // Git revert / Time Skip (Ctrl + Z)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Z)) {
+            transform.position -= new Vector3(Vector2.Distance(Vector2.zero, transform.position) > 5f ? 5f : -5f, 0, 0);
         }
-    }
-}
 
+        // git interrupt / Freeze State (Ctrl + C)
+        if (isCtrl && Input.GetKeyDown(KeyCode.C)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Rigidbody2D>().simulated = !obs.GetComponent<Rigidbody2D>().simulated;
+            }
+        }
+
+        // git patch / Paste Last (Ctrl + V)
+        if (isCtrl && Input.GetKeyDown(KeyCode.V) && activeObstacles.Count > 0) {
+            GameObject last = activeObstacles[^1];
+            if (last != null) activeObstacles.Add(Instantiate(last, transform.position + Vector3.up * 4f, Quaternion.identity));
+        }
+
+        // git branch / Decoy Clone (Ctrl + B)
+        if (isCtrl && Input.GetKeyDown(KeyCode.B)) {
+            GameObject decoy = Instantiate(gameObject, transform.position + Vector3.right * 3f, Quaternion.identity);
+            DestroyImmediate(decoy.GetComponent<OctoMovement>()); // Strip inputs
+            decoy.GetComponent<SpriteRenderer>().color = new Color(1f, 1f, 1f, 0.5f); // Make it a ghost
+            decoy.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 1000f, ForceMode2D.Impulse);
+            Destroy(decoy, 3f);
+        }
+
+        // git prune / Random Deletion (Ctrl + X)
+        if (isCtrl && Input.GetKeyDown(KeyCode.X)) {
+            for (int i = activeObstacles.Count - 1; i >= 0; i--) {
+                if (activeObstacles[i] != null && Random.value > 0.5f) {
+                    Destroy(activeObstacles[i]);
+                    activeObstacles.RemoveAt(i);
+                }
+            }
+        }
+
+        if (isAlt && Input.GetKeyDown(KeyCode.DownArrow)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.transform.localScale = new Vector3(obs.transform.localScale.x, 0.2f, 1f);
+            }
+        }
+
+        if (isCtrl && Input.GetKeyDown(KeyCode.S) && activeObstacles.Count > 0) {
+            GameObject target = activeObstacles[0];
+            if (target != null) {
+                Vector3 temp = transform.position;
+                transform.position = target.transform.position;
+                target.transform.position = temp;
+            }
+        }
+
+        if (isCtrl && Input.GetKeyDown(KeyCode.P)) {
+            GameObject closest = null;
+            float minDist = Mathf.Infinity;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    float dist = Vector2.Distance(transform.position, obs.transform.position);
+                    if (dist < minDist) { minDist = dist; closest = obs; }
+                }
+            }
+            if (closest != null) closest.transform.position = transform.position + Vector3.up * 3f;
+        }
+
+        if (isAlt && Input.GetKeyDown(KeyCode.R)) {
+            foreach (GameObject obs in activeObstacles) if (obs != null) Destroy(obs);
+            activeObstacles.Clear();
+        }
+
+        if (isCtrl && Input.GetKeyDown(KeyCode.D)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Renderer>().material.color = Random.value > 0.5f ? Color.red : Color.green;
+            }
+        }
+
+        if (isAlt && Input.GetKeyDown(KeyCode.M)) {
+            Vector3 mergePoint = transform.position + Vector3.up * 8f;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb2 = obs.GetComponent<Rigidbody2D>();
+                    rb2.linearVelocity = Vector2.zero;
+                    rb2.AddForce((mergePoint - obs.transform.position).normalized * 800f, ForceMode2D.Impulse);
+                }
+            }
+        }
+
+        if (isCtrl && Input.GetKeyDown(KeyCode.F)) {
+            for (int i = 0; i < 5; i++) {
+                GameObject payload = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                DestroyImmediate(payload.GetComponent<Collider>());
+                payload.AddComponent<BoxCollider2D>();
+                payload.transform.position = transform.position + new Vector3(Random.Range(-10f, 10f), 15f, 0f);
+                payload.transform.localScale = new Vector3(2f, 2f, 1f);
+                payload.AddComponent<Rigidbody2D>().mass = 50f;
+                payload.GetComponent<Renderer>().material.color = Color.blue;
+                activeObstacles.Add(payload);
+            }
+        }
+
+        if (isCtrl && isShift && Input.GetKeyDown(KeyCode.F)) {
+            Vector2 hurricaneForce = new Vector2(sr.flipX ? -4000f : 4000f, 500f);
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = Vector2.zero;
+                        rb.AddForce(hurricaneForce, ForceMode2D.Impulse);
+                    }
+                }
+            }
+        }
+
+        if (isAlt && Input.GetKeyDown(KeyCode.O)) {
+            float currentY = transform.position.y + 4f;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    // Instantly teleport and stack them perfectly on the Y-axis
+                    obs.transform.position = new Vector3(transform.position.x, currentY, 0f);
+                    obs.transform.rotation = Quaternion.identity;
+                    
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = Vector2.zero;
+                        rb.angularVelocity = 0f;
+                    }
+                    // Increment the height by the object's scale so they don't overlap
+                    currentY += obs.transform.localScale.y + 0.5f; 
+                }
+            }
+        }
+
+        if (isAlt && Input.GetKeyDown(KeyCode.B)) {
+            int currentCount = activeObstacles.Count; // Cache count so we don't infinite loop
+            for (int i = 0; i < currentCount; i++) {
+                GameObject obs = activeObstacles[i];
+                if (obs != null) {
+                    // Halve the original object's width
+                    obs.transform.localScale = new Vector3(obs.transform.localScale.x * 0.5f, obs.transform.localScale.y, 1f);
+                    
+                    // Generate a programmatic clone offset to the right
+                    GameObject split = Instantiate(obs, obs.transform.position + Vector3.right * 1.5f, Quaternion.identity);
+                    activeObstacles.Add(split);
+                    
+                    // Shove them apart violently
+                    obs.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 600f, ForceMode2D.Impulse);
+                    split.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 600f, ForceMode2D.Impulse);
+                }
+            }
+        }
+
+        if (isAlt && Input.GetKeyDown(KeyCode.L)) {
+            GameObject crumb = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            DestroyImmediate(crumb.GetComponent<Collider>());
+            crumb.AddComponent<BoxCollider2D>();
+            crumb.transform.position = transform.position;
+            crumb.transform.localScale = new Vector3(1f, 1f, 1f);
+            crumb.GetComponent<Renderer>().material.color = Color.yellow;
+            activeObstacles.Add(crumb);
+        }
+
+        if (isCtrl && Input.GetKeyDown(KeyCode.T) && activeObstacles.Count > 0) {
+            GameObject target = activeObstacles[^1];
+            if (target != null) {
+                GameObject tag = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                DestroyImmediate(tag.GetComponent<Collider>());
+                tag.transform.position = target.transform.position + Vector3.up * 2f;
+                tag.transform.SetParent(target.transform);
+                tag.GetComponent<Renderer>().material.color = Color.magenta;
+            }
+        }
+
+        if (isAlt && Input.GetKeyDown(KeyCode.C)) {
+            Rigidbody2D myRb = GetComponent<Rigidbody2D>();
+            myRb.linearVelocity = Vector2.zero;
+            myRb.AddForce(new Vector2(sr.flipX ? -1500f : 1500f, 1000f), ForceMode2D.Impulse);
+        }
+
+        if (isCtrl && Input.GetKeyDown(KeyCode.E)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    obs.transform.localScale *= 0.5f;
+                    obs.GetComponent<Renderer>().material.color = new Color(0.6f, 0.4f, 0.2f); // Brown box
+                }
+            }
+        }
+
+        if (isAlt && Input.GetKeyDown(KeyCode.S)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 500f, ForceMode2D.Impulse);
+            }
+        }
+
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.Backspace)) {
+            foreach (GameObject obs in activeObstacles) if (obs != null) Destroy(obs);
+            if (playerScript != null) Destroy(playerScript.gameObject);
+            Destroy(gameObject); // Deletes the Octocat entirely!
+        }
+
+
+
+        // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
+        if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Rigidbody2D>().gravityScale = -2f;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F8)) {
+            // Physically barrel-roll the camera 180 degrees to bypass URP matrix overrides
+            Camera.main.transform.Rotate(0f, 0f, 180f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.F9)) {
+            transform.localScale = new Vector3(4f, 4f, 1f); // Half of 8f
+            GetComponent<SpriteRenderer>().color = new Color(0.5f, 0.25f, 0f); // Dirt brown
+            GetComponent<Collider2D>().enabled = false;
+        }
+        if (Input.GetKeyUp(KeyCode.F9)) {
+            transform.localScale = new Vector3(8f, 8f, 1f);
+            GetComponent<SpriteRenderer>().color = Color.white;
+            GetComponent<Collider2D>().enabled = true;
+        }
+
+        if (Input.GetKey(KeyCode.F10)) {
+            GameObject rain = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            rain.name = "MatrixRain";
+            
+            // Disable the native 3D collider so it doesn't bump into anything
+            rain.GetComponent<Collider>().enabled = false;
+            
+            // Push it back to Z = 5 so it falls visually behind the Octocat
+            rain.transform.position = new Vector3(Random.Range(-25f, 25f), 15f, 5f);
+            rain.transform.localScale = new Vector3(0.5f, 2f, 1f);
+            
+            Renderer rend = rain.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = Color.green;
+            
+            // FIX: Use a 3D Rigidbody. It bypasses the 2D component conflict completely!
+            Rigidbody rb3d = rain.AddComponent<Rigidbody>();
+            rb3d.mass = 1f;
+            rb3d.useGravity = true; 
+            
+            activeObstacles.Add(rain);
+            Destroy(rain, 4f);
+        }
+
+        if (Input.GetKeyDown(KeyCode.F11)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    // Toggles the active state of the GameObject in the engine hierarchy
+                    obs.SetActive(!obs.activeSelf);
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F12)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null && obs.activeInHierarchy) {
+                    Rigidbody2D obsRb = obs.GetComponent<Rigidbody2D>();
+                    if (obsRb != null) {
+                        // Calculate trajectory towards global center
+                        Vector2 centerDir = (Vector3.zero - obs.transform.position).normalized;
+                        
+                        // Kill current momentum and apply massive converging force
+                        obsRb.linearVelocity = Vector2.zero;
+                        obsRb.AddForce(centerDir * 2500f, ForceMode2D.Impulse);
+                        obsRb.AddTorque(Random.Range(-500f, 500f));
+                    }
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Keypad8)) {
+            foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+                // Exclude the Octocat and the Chicken
+                if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+                    
+                    // 1. Randomize mass for collision weight
+                    body.mass = Random.Range(0.1f, 100f);
+                    
+                    // 2. Randomize gravity so they fall at completely different speeds
+                    body.gravityScale = Random.Range(0.2f, 5f);
+                    
+                    // 3. Randomize their scale so you can visually see the change
+                    float randomSize = Random.Range(0.5f, 3f);
+                    body.transform.localScale = new Vector3(randomSize, randomSize, 1f);
+                    
+                    // 4. Give them a tiny random rotation bump to make it look like a glitch
+                    body.AddTorque(Random.Range(-50f, 50f));
+                }
+            }
+        }
+
+        if (Input.GetKey(KeyCode.Keypad9)) {
+            // Find all physics objects in the scene
+            foreach(Rigidbody2D body in FindObjectsByType<Rigidbody2D>(FindObjectsSortMode.None)) {
+                
+                // Ensure we don't pull the Octocat itself or the dormant Chicken
+                if (body != rb && (playerScript == null || body.gameObject != playerScript.gameObject)) {
+                    
+                    // Calculate the direction from the object to the Octocat
+                    Vector2 pullDirection = (transform.position - body.transform.position).normalized;
+                    
+                    // Apply a continuous force to drag them towards you
+                    body.AddForce(pullDirection * (body.mass * 15f));
+                }
+            }
+        }
+
+        Vector3 viewportPos = Camera.main.WorldToViewportPoint(transform.position);
+
+        // If we cross the right edge, instantly teleport to the left edge
+        if (viewportPos.x > 1.05f) {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(-0.05f, viewportPos.y, viewportPos.z));
+        }
+        // If we cross the left edge, instantly teleport to the right edge
+        else if (viewportPos.x < -0.05f) {
+            transform.position = Camera.main.ViewportToWorldPoint(new Vector3(1.05f, viewportPos.y, viewportPos.z));
+        }
+
+        if (Input.GetKeyDown(KeyCode.F1) && playerScript != null) {
+            Vector3 mouseWorldPos = Camera.main.ScreenToWorldPoint(Input.mousePosition);
+            mouseWorldPos.z = 0f;
+            Vector2 dir = (mouseWorldPos - playerScript.transform.position).normalized;
+            
+            GameObject egg = Instantiate(playerScript.eggPrefab, playerScript.transform.position + (Vector3)dir, Quaternion.identity);
+            egg.AddComponent<Rigidbody2D>().linearVelocity = dir * 15f;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F2)) {
+            Vector2 facing = sr.flipX ? Vector2.left : Vector2.right;
+            
+            // Draw a cyan laser in the Unity Scene view (not the Game view) for 2 seconds so you can see where it aims
+            Debug.DrawRay(transform.position, facing * 30f, Color.cyan, 2f);
+            
+            // Shoot a piercing raycast that detects every single object in its path
+            RaycastHit2D[] hits = Physics2D.RaycastAll(transform.position, facing, 30f);
+            
+            foreach (RaycastHit2D hit in hits) {
+                // Ignore the Octocat itself and the dormant Chicken
+                if (hit.collider.gameObject != gameObject && (playerScript == null || hit.collider.gameObject != playerScript.gameObject)) {
+                    
+                    // We found the first valid obstacle! Clone it, track it, and break the loop
+                    GameObject clone = Instantiate(hit.collider.gameObject, hit.point + Vector2.up * 4f, Quaternion.identity);
+                    activeObstacles.Add(clone);
+                    break; 
+                }
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F3) && playerScript != null) {
+            StartCoroutine(GitPushRoutine());
+        }
 
         if (Input.GetKey(KeyCode.M)) {
             Collider2D[] colliders = Physics2D.OverlapCircleAll(transform.position, 10f);
@@ -417,6 +755,39 @@ if (Input.GetKeyUp(KeyCode.Space)) {
                     hitRb.AddForce(pullDir.normalized * 25f); 
                 }
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F4)) {
+            Collider2D closest = null;
+            float minDist = Mathf.Infinity;
+            
+            foreach(Collider2D hit in Physics2D.OverlapCircleAll(transform.position, 15f)) {
+                if (hit.gameObject != gameObject && hit.gameObject != playerScript.gameObject) {
+                    float dist = Vector2.Distance(transform.position, hit.transform.position);
+                    if (dist < minDist) { closest = hit; minDist = dist; }
+                }
+            }
+            
+            if (closest != null) {
+                // Swap positions and steal its appearance
+                Vector3 tempPos = transform.position;
+                transform.position = closest.transform.position;
+                closest.transform.position = tempPos;
+                GetComponent<SpriteRenderer>().sprite = closest.GetComponent<SpriteRenderer>().sprite;
+            }
+        }
+
+        if (Input.GetKeyDown(KeyCode.F5)) {
+            Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Default"), true);
+            sr.color = new Color(1f, 1f, 1f, 0.3f);
+        }
+        if (Input.GetKeyUp(KeyCode.F5)) {
+            Physics2D.IgnoreLayerCollision(gameObject.layer, LayerMask.NameToLayer("Default"), false);
+            sr.color = Color.white;
+        }
+
+        if (Input.GetKeyDown(KeyCode.F6)) {
+            Camera.main.transform.position += new Vector3(Random.Range(-2f, 2f), Random.Range(-2f, 2f), 0);
         }
 
         if (Input.GetKeyDown(KeyCode.Alpha9) && playerScript != null) {
@@ -439,6 +810,308 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             Destroy(branch, 2f);
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.X)) {
+            if (activeObstacles.Count > 0) {
+                GameObject lastObs = activeObstacles[^1];
+                if (lastObs != null) Destroy(lastObs);
+                activeObstacles.RemoveAt(activeObstacles.Count - 1);
+            }
+        }
+
+        // 5. git commit --dry-run / The Ghost Block (Ctrl + Space)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Space)) {
+            GameObject ghost = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            ghost.name = "DryRunBlock";
+
+            DestroyImmediate(ghost.GetComponent<Collider>());
+            ghost.AddComponent<BoxCollider2D>();
+
+            ghost.transform.position = transform.position + (Vector3)(sr.flipX ? Vector2.left : Vector2.right) * 5f;
+            ghost.transform.localScale = new Vector3(3f, 3f, 1f);
+
+            Renderer rend = ghost.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = new Color(0.8f, 0.8f, 0.8f, 0.4f); // Translucent gray
+
+            ghost.AddComponent<Rigidbody2D>().mass = 5f;
+            activeObstacles.Add(ghost);
+
+            // Evaporates after exactly 1.5 seconds
+            Destroy(ghost, 1.5f);
+        }
+
+        // 6. git reset --soft / The Gravity Loop (Ctrl + Backspace)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Backspace)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    // Preserve the X axis, but teleport them back to the skybox ceiling
+                    obs.transform.position = new Vector3(obs.transform.position.x, 20f, 0f);
+
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) rb.linearVelocity = Vector2.zero; // Kill falling momentum so they drop fresh
+                }
+            }
+        }
+
+        // 7. git blame --porcelain / The Interrogation Spotlight (Alt + P)
+        if (isAlt && Input.GetKeyDown(KeyCode.P)) {
+            if (activeObstacles.Count > 0) {
+                // Pick one completely random active obstacle
+                GameObject target = activeObstacles[Random.Range(0, activeObstacles.Count)];
+                if (target != null) {
+                    // Mutate it to draw attention
+                    target.transform.localScale *= 2f;
+                    target.GetComponent<Renderer>().material.color = Color.cyan;
+
+                    Rigidbody2D rb = target.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = Vector2.zero;
+                        rb.AddForce(Vector2.up * 1500f, ForceMode2D.Impulse);
+                        rb.AddTorque(800f);
+                    }
+                }
+            }
+        }
+
+        // 1. git add . / The Staging Area (Ctrl + A)
+        if (isCtrl && Input.GetKeyDown(KeyCode.A)) {
+            float angle = 0f;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    float x = transform.position.x + Mathf.Cos(angle) * 5f;
+                    float y = transform.position.y + Mathf.Sin(angle) * 5f;
+                    obs.transform.position = new Vector3(x, y, 0f);
+                    obs.GetComponent<Rigidbody2D>().linearVelocity = Vector2.zero;
+                    angle += (Mathf.PI * 2f) / activeObstacles.Count;
+                }
+            }
+        }
+
+        // 2. git commit -m / The Permafrost (Ctrl + Alt + C)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.C)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+                    obs.GetComponent<Renderer>().material.color = Color.white;
+                }
+            }
+        }
+
+        // 3. git pull / Meteor Strike (Ctrl + DownArrow)
+        if (isCtrl && Input.GetKeyDown(KeyCode.DownArrow)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+                        rb.AddForce(Vector2.down * 3000f, ForceMode2D.Impulse);
+                    }
+                }
+            }
+        }
+
+        // 4. git push / Sky Launch (Ctrl + UpArrow)
+        if (isCtrl && Input.GetKeyDown(KeyCode.UpArrow)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+                        rb.AddForce(Vector2.up * 3000f, ForceMode2D.Impulse);
+                    }
+                }
+            }
+        }
+
+        // 5. git clone --depth 1 / Proximity Duplication (Ctrl + 1)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Alpha1)) {
+            GameObject closest = null;
+            float minDist = Mathf.Infinity;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    float dist = Vector2.Distance(transform.position, obs.transform.position);
+                    if (dist < minDist) { minDist = dist; closest = obs; }
+                }
+            }
+            if (closest != null) {
+                GameObject clone = Instantiate(closest, closest.transform.position + Vector3.up * 3f, Quaternion.identity);
+                activeObstacles.Add(clone);
+            }
+        }
+
+        // 6. git rebase -i HEAD~3 / Pop Last Three (Ctrl + 3)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Alpha3)) {
+            int popped = 0;
+            for (int i = activeObstacles.Count - 1; i >= 0 && popped < 3; i--) {
+                if (activeObstacles[i] != null) {
+                    Destroy(activeObstacles[i]);
+                    activeObstacles.RemoveAt(i);
+                    popped++;
+                }
+            }
+        }
+
+        // 7. git log --stat / Mass-Based Scaling (Ctrl + Alt + L)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.L)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        float scale = Mathf.Clamp(rb.mass * 0.1f, 0.5f, 5f);
+                        obs.transform.localScale = new Vector3(scale, scale, 1f);
+                    }
+                }
+            }
+        }
+
+        // 8. git stash apply / Scene Mirroring (Alt + A)
+        if (isAlt && Input.GetKeyDown(KeyCode.A)) {
+            int currentCount = activeObstacles.Count;
+            for (int i = 0; i < currentCount; i++) {
+                if (activeObstacles[i] != null) {
+                    GameObject dup = Instantiate(activeObstacles[i], activeObstacles[i].transform.position + Vector3.right * 2f, Quaternion.identity);
+                    activeObstacles.Add(dup);
+                }
+            }
+        }
+
+        // 9. git fsck / Gyroscopic Auto-Leveler (Ctrl + F5)
+        if (isCtrl && Input.GetKeyDown(KeyCode.F5)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.angularVelocity = 0f;
+                        obs.transform.rotation = Quaternion.identity;
+                    }
+                }
+            }
+        }
+
+        // 10. git clean -fd / Out-of-Bounds Sweeper (Ctrl + Shift + C)
+        if (isCtrl && isShift && Input.GetKeyDown(KeyCode.C)) {
+            for (int i = activeObstacles.Count - 1; i >= 0; i--) {
+                if (activeObstacles[i] != null) {
+                    float y = activeObstacles[i].transform.position.y;
+                    if (y < -20f || y > 40f) {
+                        Destroy(activeObstacles[i]);
+                        activeObstacles.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
+        // 11. git rm --cached / Orphan Entities (Ctrl + Shift + R)
+        if (isCtrl && isShift && Input.GetKeyDown(KeyCode.R)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.GetComponent<Renderer>().material.color = Color.gray;
+            }
+            activeObstacles.Clear(); // Clears the list without destroying the physical objects
+        }
+
+        // 12. git blame --line / The Plumb Bob (Alt + Shift + DownArrow)
+        if (isAlt && isShift && Input.GetKeyDown(KeyCode.DownArrow)) {
+            RaycastHit2D hit = Physics2D.Raycast(transform.position, Vector2.down, 50f);
+            if (hit.collider != null && hit.collider.gameObject != gameObject && (playerScript == null || hit.collider.gameObject != playerScript.gameObject)) {
+                hit.collider.GetComponent<Renderer>().material.color = Color.yellow;
+                hit.collider.GetComponent<Rigidbody2D>().AddForce(Vector2.up * 2000f, ForceMode2D.Impulse);
+            }
+        }
+
+        // 13. git checkout HEAD / Origin Recall (Alt + Home)
+        if (isAlt && Input.GetKeyDown(KeyCode.Home)) {
+            transform.position = Vector3.zero;
+            Rigidbody2D myRb = GetComponent<Rigidbody2D>();
+            if (myRb != null) myRb.linearVelocity = Vector2.zero;
+        }
+
+        // 14. git show / Maximum Verbosity (Ctrl + Shift + S)
+        if (isCtrl && isShift && Input.GetKeyDown(KeyCode.S)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.transform.localScale = new Vector3(5f, 5f, 1f);
+            }
+        }
+
+        // 15. git mv / X-Axis Mirror (Ctrl + Alt + M)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.M)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    obs.transform.position = new Vector3(-obs.transform.position.x, obs.transform.position.y, 0f);
+                }
+            }
+        }
+
+        // 16. git revert HEAD / Velocity Inversion (Ctrl + Alt + Z)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.Z)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) rb.linearVelocity *= -1f;
+                }
+            }
+        }
+
+        // 17. git shortlog / X-Axis Squash (Alt + Shift + S)
+        if (isAlt && isShift && Input.GetKeyDown(KeyCode.S)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.transform.localScale = new Vector3(0.2f, obs.transform.localScale.y, 1f);
+            }
+        }
+
+        // 18. git rev-parse / Entity Shuffle (Ctrl + Alt + P)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.P)) {
+            for (int i = 0; i < activeObstacles.Count; i++) {
+                if (activeObstacles[i] != null) {
+                    int randomIndex = Random.Range(0, activeObstacles.Count);
+                    if (activeObstacles[randomIndex] != null) {
+                        Vector3 tempPos = activeObstacles[i].transform.position;
+                        activeObstacles[i].transform.position = activeObstacles[randomIndex].transform.position;
+                        activeObstacles[randomIndex].transform.position = tempPos;
+                    }
+                }
+            }
+        }
+
+        // 19. git daemon / The Boss Sphere (Ctrl + Shift + Alt + D)
+        if (isCtrl && isShift && isAlt && Input.GetKeyDown(KeyCode.D)) {
+            GameObject boss = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            boss.name = "DaemonSphere";
+            DestroyImmediate(boss.GetComponent<Collider>());
+            CircleCollider2D circ = boss.AddComponent<CircleCollider2D>();
+            boss.transform.position = transform.position + Vector3.up * 15f;
+            boss.transform.localScale = new Vector3(8f, 8f, 1f);
+            boss.GetComponent<Renderer>().material = new Material(Shader.Find("Sprites/Default"));
+            boss.GetComponent<Renderer>().material.color = Color.red;
+            Rigidbody2D rb = boss.AddComponent<Rigidbody2D>();
+            rb.mass = 1000f;
+            activeObstacles.Add(boss);
+        }
+
+        // 20. git merge --squash / The Mega Block (Ctrl + Shift + Alt + M)
+        if (isCtrl && isShift && isAlt && Input.GetKeyDown(KeyCode.M)) {
+            if (activeObstacles.Count > 0) {
+                float totalMass = 0f;
+                foreach (GameObject obs in activeObstacles) {
+                    if (obs != null) {
+                        totalMass += obs.GetComponent<Rigidbody2D>().mass;
+                        Destroy(obs);
+                    }
+                }
+                activeObstacles.Clear();
+
+                GameObject mega = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                DestroyImmediate(mega.GetComponent<Collider>());
+                mega.AddComponent<BoxCollider2D>();
+                mega.transform.position = transform.position + Vector3.up * 10f;
+                mega.transform.localScale = new Vector3(6f, 6f, 1f);
+                mega.GetComponent<Renderer>().material = new Material(Shader.Find("Sprites/Default"));
+                mega.GetComponent<Renderer>().material.color = Color.black;
+                mega.AddComponent<Rigidbody2D>().mass = totalMass;
+                activeObstacles.Add(mega);
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");
@@ -448,8 +1121,43 @@ if (Input.GetKeyUp(KeyCode.Space)) {
         
         if (movement.x > 0) sr.flipX = false;
         else if (movement.x < 0) sr.flipX = true;
+
+        if (Input.GetKey(KeyCode.F7)) {
+            Camera.main.backgroundColor = Color.HSVToRGB(Mathf.Repeat(Time.time, 1f), 1f, 1f);
+        }
     }
 
+    private System.Collections.IEnumerator GitPushRoutine() {
+        // FIX: Grab the component directly so we don't rely on the global 'sr' variable
+        bool isFlipped = GetComponent<SpriteRenderer>().flipX;
+
+        // 1. Move the REAL Chicken directly into the Octocat's hands
+        Vector2 throwDir = isFlipped ? Vector2.left : Vector2.right;
+        playerScript.transform.position = transform.position + (Vector3)throwDir * 3f + Vector3.up * 1f;
+        
+        // 2. Make the real Chicken fully visible and physical
+        playerScript.GetComponent<SpriteRenderer>().enabled = true;
+        playerScript.GetComponent<Collider2D>().enabled = true;
+        
+        // 3. Launch the real Chicken!
+        Rigidbody2D chickenRb = playerScript.GetComponent<Rigidbody2D>();
+        chickenRb.linearVelocity = Vector2.zero;
+        chickenRb.AddForce(throwDir * 1500f + Vector2.up * 600f, ForceMode2D.Impulse);
+        
+        // FIX: Use the localized isFlipped boolean here as well
+        chickenRb.AddTorque(1000f * (isFlipped ? 1f : -1f));
+        
+        // 4. Wait exactly 2 seconds while it flies through the air
+        yield return new WaitForSeconds(2f);
+        
+        // 5. Stop it exactly where it landed, fix its rotation, and make it vanish again
+        chickenRb.linearVelocity = Vector2.zero;
+        chickenRb.angularVelocity = 0f;
+        chickenRb.transform.rotation = Quaternion.identity; // Stands it upright 
+        
+        playerScript.GetComponent<SpriteRenderer>().enabled = false;
+        playerScript.GetComponent<Collider2D>().enabled = false;
+    }
     void FixedUpdate()
     {
         // Only apply movement physics if the Octocat is in control

@@ -898,6 +898,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 3. git pull / Meteor Strike (Ctrl + DownArrow)
+        if (isCtrl && Input.GetKeyDown(KeyCode.DownArrow)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+                        rb.AddForce(Vector2.down * 3000f, ForceMode2D.Impulse);
+                    }
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

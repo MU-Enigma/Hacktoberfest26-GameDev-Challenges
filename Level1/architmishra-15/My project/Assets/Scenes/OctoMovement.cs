@@ -818,6 +818,28 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 5. git commit --dry-run / The Ghost Block (Ctrl + Space)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Space)) {
+            GameObject ghost = GameObject.CreatePrimitive(PrimitiveType.Cube);
+            ghost.name = "DryRunBlock";
+
+            DestroyImmediate(ghost.GetComponent<Collider>());
+            ghost.AddComponent<BoxCollider2D>();
+
+            ghost.transform.position = transform.position + (Vector3)(sr.flipX ? Vector2.left : Vector2.right) * 5f;
+            ghost.transform.localScale = new Vector3(3f, 3f, 1f);
+
+            Renderer rend = ghost.GetComponent<Renderer>();
+            rend.material = new Material(Shader.Find("Sprites/Default"));
+            rend.material.color = new Color(0.8f, 0.8f, 0.8f, 0.4f); // Translucent gray
+
+            ghost.AddComponent<Rigidbody2D>().mass = 5f;
+            activeObstacles.Add(ghost);
+
+            // Evaporates after exactly 1.5 seconds
+            Destroy(ghost, 1.5f);
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

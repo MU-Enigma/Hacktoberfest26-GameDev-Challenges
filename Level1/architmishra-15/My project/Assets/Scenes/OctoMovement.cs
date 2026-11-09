@@ -989,6 +989,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 10. git clean -fd / Out-of-Bounds Sweeper (Ctrl + Shift + C)
+        if (isCtrl && isShift && Input.GetKeyDown(KeyCode.C)) {
+            for (int i = activeObstacles.Count - 1; i >= 0; i--) {
+                if (activeObstacles[i] != null) {
+                    float y = activeObstacles[i].transform.position.y;
+                    if (y < -20f || y > 40f) {
+                        Destroy(activeObstacles[i]);
+                        activeObstacles.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

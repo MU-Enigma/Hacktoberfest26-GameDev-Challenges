@@ -520,6 +520,25 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.B)) {
+            int currentCount = activeObstacles.Count; // Cache count so we don't infinite loop
+            for (int i = 0; i < currentCount; i++) {
+                GameObject obs = activeObstacles[i];
+                if (obs != null) {
+                    // Halve the original object's width
+                    obs.transform.localScale = new Vector3(obs.transform.localScale.x * 0.5f, obs.transform.localScale.y, 1f);
+                    
+                    // Generate a programmatic clone offset to the right
+                    GameObject split = Instantiate(obs, obs.transform.position + Vector3.right * 1.5f, Quaternion.identity);
+                    activeObstacles.Add(split);
+                    
+                    // Shove them apart violently
+                    obs.GetComponent<Rigidbody2D>().AddForce(Vector2.left * 600f, ForceMode2D.Impulse);
+                    split.GetComponent<Rigidbody2D>().AddForce(Vector2.right * 600f, ForceMode2D.Impulse);
+                }
+            }
+        }
+
         if (isAlt && Input.GetKeyDown(KeyCode.L)) {
             GameObject crumb = GameObject.CreatePrimitive(PrimitiveType.Cube);
             DestroyImmediate(crumb.GetComponent<Collider>());

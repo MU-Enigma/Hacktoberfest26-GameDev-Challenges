@@ -911,6 +911,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 4. git push / Sky Launch (Ctrl + UpArrow)
+        if (isCtrl && Input.GetKeyDown(KeyCode.UpArrow)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = new Vector2(rb.linearVelocity.x, 0f);
+                        rb.AddForce(Vector2.up * 3000f, ForceMode2D.Impulse);
+                    }
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

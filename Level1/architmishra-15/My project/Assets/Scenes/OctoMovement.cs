@@ -1088,6 +1088,30 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             activeObstacles.Add(boss);
         }
 
+        // 20. git merge --squash / The Mega Block (Ctrl + Shift + Alt + M)
+        if (isCtrl && isShift && isAlt && Input.GetKeyDown(KeyCode.M)) {
+            if (activeObstacles.Count > 0) {
+                float totalMass = 0f;
+                foreach (GameObject obs in activeObstacles) {
+                    if (obs != null) {
+                        totalMass += obs.GetComponent<Rigidbody2D>().mass;
+                        Destroy(obs);
+                    }
+                }
+                activeObstacles.Clear();
+
+                GameObject mega = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                DestroyImmediate(mega.GetComponent<Collider>());
+                mega.AddComponent<BoxCollider2D>();
+                mega.transform.position = transform.position + Vector3.up * 10f;
+                mega.transform.localScale = new Vector3(6f, 6f, 1f);
+                mega.GetComponent<Renderer>().material = new Material(Shader.Find("Sprites/Default"));
+                mega.GetComponent<Renderer>().material.color = Color.black;
+                mega.AddComponent<Rigidbody2D>().mass = totalMass;
+                activeObstacles.Add(mega);
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

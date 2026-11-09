@@ -501,6 +501,25 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isAlt && Input.GetKeyDown(KeyCode.O)) {
+            float currentY = transform.position.y + 4f;
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    // Instantly teleport and stack them perfectly on the Y-axis
+                    obs.transform.position = new Vector3(transform.position.x, currentY, 0f);
+                    obs.transform.rotation = Quaternion.identity;
+                    
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        rb.linearVelocity = Vector2.zero;
+                        rb.angularVelocity = 0f;
+                    }
+                    // Increment the height by the object's scale so they don't overlap
+                    currentY += obs.transform.localScale.y + 0.5f; 
+                }
+            }
+        }
+
         if (isAlt && Input.GetKeyDown(KeyCode.L)) {
             GameObject crumb = GameObject.CreatePrimitive(PrimitiveType.Cube);
             DestroyImmediate(crumb.GetComponent<Collider>());

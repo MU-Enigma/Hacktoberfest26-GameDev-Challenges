@@ -940,6 +940,18 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 6. git rebase -i HEAD~3 / Pop Last Three (Ctrl + 3)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Alpha3)) {
+            int popped = 0;
+            for (int i = activeObstacles.Count - 1; i >= 0 && popped < 3; i--) {
+                if (activeObstacles[i] != null) {
+                    Destroy(activeObstacles[i]);
+                    activeObstacles.RemoveAt(i);
+                    popped++;
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

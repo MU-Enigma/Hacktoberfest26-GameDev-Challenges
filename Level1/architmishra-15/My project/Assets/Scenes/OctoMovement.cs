@@ -965,6 +965,17 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 8. git stash apply / Scene Mirroring (Alt + A)
+        if (isAlt && Input.GetKeyDown(KeyCode.A)) {
+            int currentCount = activeObstacles.Count;
+            for (int i = 0; i < currentCount; i++) {
+                if (activeObstacles[i] != null) {
+                    GameObject dup = Instantiate(activeObstacles[i], activeObstacles[i].transform.position + Vector3.right * 2f, Quaternion.identity);
+                    activeObstacles.Add(dup);
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

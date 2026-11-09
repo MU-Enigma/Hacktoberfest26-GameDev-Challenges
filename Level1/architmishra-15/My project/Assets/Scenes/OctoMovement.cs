@@ -952,6 +952,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 7. git log --stat / Mass-Based Scaling (Ctrl + Alt + L)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.L)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) {
+                        float scale = Mathf.Clamp(rb.mass * 0.1f, 0.5f, 5f);
+                        obs.transform.localScale = new Vector3(scale, scale, 1f);
+                    }
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

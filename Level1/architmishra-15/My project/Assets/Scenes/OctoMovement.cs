@@ -1052,6 +1052,13 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 17. git shortlog / X-Axis Squash (Alt + Shift + S)
+        if (isAlt && isShift && Input.GetKeyDown(KeyCode.S)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) obs.transform.localScale = new Vector3(0.2f, obs.transform.localScale.y, 1f);
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

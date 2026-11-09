@@ -840,6 +840,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             Destroy(ghost, 1.5f);
         }
 
+        // 6. git reset --soft / The Gravity Loop (Ctrl + Backspace)
+        if (isCtrl && Input.GetKeyDown(KeyCode.Backspace)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    // Preserve the X axis, but teleport them back to the skybox ceiling
+                    obs.transform.position = new Vector3(obs.transform.position.x, 20f, 0f);
+
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) rb.linearVelocity = Vector2.zero; // Kill falling momentum so they drop fresh
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

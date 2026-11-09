@@ -494,6 +494,17 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             activeObstacles.Add(crumb);
         }
 
+        if (isCtrl && Input.GetKeyDown(KeyCode.T) && activeObstacles.Count > 0) {
+            GameObject target = activeObstacles[^1];
+            if (target != null) {
+                GameObject tag = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+                DestroyImmediate(tag.GetComponent<Collider>());
+                tag.transform.position = target.transform.position + Vector3.up * 2f;
+                tag.transform.SetParent(target.transform);
+                tag.GetComponent<Renderer>().material.color = Color.magenta;
+            }
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

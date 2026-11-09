@@ -1059,6 +1059,20 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 18. git rev-parse / Entity Shuffle (Ctrl + Alt + P)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.P)) {
+            for (int i = 0; i < activeObstacles.Count; i++) {
+                if (activeObstacles[i] != null) {
+                    int randomIndex = Random.Range(0, activeObstacles.Count);
+                    if (activeObstacles[randomIndex] != null) {
+                        Vector3 tempPos = activeObstacles[i].transform.position;
+                        activeObstacles[i].transform.position = activeObstacles[randomIndex].transform.position;
+                        activeObstacles[randomIndex].transform.position = tempPos;
+                    }
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

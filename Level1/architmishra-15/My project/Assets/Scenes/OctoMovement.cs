@@ -511,6 +511,15 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             myRb.AddForce(new Vector2(sr.flipX ? -1500f : 1500f, 1000f), ForceMode2D.Impulse);
         }
 
+        if (isCtrl && Input.GetKeyDown(KeyCode.E)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    obs.transform.localScale *= 0.5f;
+                    obs.GetComponent<Renderer>().material.color = new Color(0.6f, 0.4f, 0.2f); // Brown box
+                }
+            }
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

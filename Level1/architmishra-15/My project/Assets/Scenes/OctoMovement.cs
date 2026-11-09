@@ -887,6 +887,17 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 2. git commit -m / The Permafrost (Ctrl + Alt + C)
+        if (isCtrl && isAlt && Input.GetKeyDown(KeyCode.C)) {
+            foreach (GameObject obs in activeObstacles) {
+                if (obs != null) {
+                    Rigidbody2D rb = obs.GetComponent<Rigidbody2D>();
+                    if (rb != null) rb.bodyType = RigidbodyType2D.Static;
+                    obs.GetComponent<Renderer>().material.color = Color.white;
+                }
+            }
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

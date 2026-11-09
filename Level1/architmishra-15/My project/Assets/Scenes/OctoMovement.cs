@@ -1073,6 +1073,21 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        // 19. git daemon / The Boss Sphere (Ctrl + Shift + Alt + D)
+        if (isCtrl && isShift && isAlt && Input.GetKeyDown(KeyCode.D)) {
+            GameObject boss = GameObject.CreatePrimitive(PrimitiveType.Sphere);
+            boss.name = "DaemonSphere";
+            DestroyImmediate(boss.GetComponent<Collider>());
+            CircleCollider2D circ = boss.AddComponent<CircleCollider2D>();
+            boss.transform.position = transform.position + Vector3.up * 15f;
+            boss.transform.localScale = new Vector3(8f, 8f, 1f);
+            boss.GetComponent<Renderer>().material = new Material(Shader.Find("Sprites/Default"));
+            boss.GetComponent<Renderer>().material.color = Color.red;
+            Rigidbody2D rb = boss.AddComponent<Rigidbody2D>();
+            rb.mass = 1000f;
+            activeObstacles.Add(boss);
+        }
+
         // Standard Movement Capture
         movement.x = Input.GetAxisRaw("Horizontal");
         movement.y = Input.GetAxisRaw("Vertical");

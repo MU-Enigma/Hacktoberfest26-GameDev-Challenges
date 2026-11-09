@@ -471,6 +471,19 @@ if (Input.GetKeyUp(KeyCode.Space)) {
             }
         }
 
+        if (isCtrl && Input.GetKeyDown(KeyCode.F)) {
+            for (int i = 0; i < 5; i++) {
+                GameObject payload = GameObject.CreatePrimitive(PrimitiveType.Cube);
+                DestroyImmediate(payload.GetComponent<Collider>());
+                payload.AddComponent<BoxCollider2D>();
+                payload.transform.position = transform.position + new Vector3(Random.Range(-10f, 10f), 15f, 0f);
+                payload.transform.localScale = new Vector3(2f, 2f, 1f);
+                payload.AddComponent<Rigidbody2D>().mass = 50f;
+                payload.GetComponent<Renderer>().material.color = Color.blue;
+                activeObstacles.Add(payload);
+            }
+        }
+
         // git pull --rebase / Anti-Gravity Inversion (Alt + UpArrow)
         if (isAlt && Input.GetKeyDown(KeyCode.UpArrow)) {
             foreach (GameObject obs in activeObstacles) {

@@ -15,13 +15,8 @@ public class PlayerMovement : MonoBehaviour
     public float sprintMultiplier = 1.7f;
     public float jumpForce = 8f;
 
-    [Header("Coyote Time")]
-    public float coyoteTime = 0.15f;
-    private float coyoteTimeCounter;
-
-    [Header("Jump Buffer")]
-    public float jumpBufferTime = 0.15f;
-    private float jumpBufferCounter;
+    [Header("Variable Jump Height")]
+    public float jumpCutMultiplier = 0.5f;
 
     [Header("Dash")]
     public float dashSpeed = 15f;
@@ -37,10 +32,15 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Vector2 movement;
+    private SpriteRenderer spriteRenderer;
     private Vector3 originalScale;
     private int jumpsRemaining = 4;
     private bool isGrounded;
     private bool isDashing;
+
+    [Header("Coyote Time")]
+    public float coyoteTime = 0.15f;
+    private float coyoteTimeCounter;
     private bool dashReady = true;
     private bool specialActive;
 
@@ -49,6 +49,7 @@ public class PlayerMovement : MonoBehaviour
         normalMoveSpeed = moveSpeed;
         rb = GetComponent<Rigidbody2D>();
         originalScale = transform.localScale;
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();  
     }
 
     void Update()
@@ -85,8 +86,26 @@ public class PlayerMovement : MonoBehaviour
                 coyoteTimeCounter - Time.deltaTime
             );
 
+        slowCoroutine = StartCoroutine(SlowPlayer());
+    }
+}
+        if (isGrounded)
+            coyoteTimeCounter = coyoteTime;
+        else
+            coyoteTimeCounter -= Time.deltaTime;
+
         ReadMovement();
         HandleAbilities();
+
+        if (Keyboard.current != null &&
+            Keyboard.current.spaceKey.wasReleasedThisFrame &&
+            rb.linearVelocity.y > 0f)
+        {
+            rb.linearVelocity = new Vector2(
+                rb.linearVelocity.x,
+                rb.linearVelocity.y * jumpCutMultiplier
+            );
+        }
     }
 
     IEnumerator SlowPlayer()
@@ -116,6 +135,11 @@ public class PlayerMovement : MonoBehaviour
             movement.x = 1f;
 
         movement = movement.normalized;
+
+        if (spriteRenderer != null && movement.x != 0)
+        {
+        spriteRenderer.flipX = movement.x < 0;
+        }
     }
 
     void FixedUpdate()
@@ -142,20 +166,12 @@ public class PlayerMovement : MonoBehaviour
     {
         if (Keyboard.current == null) return;
 
-        if (jumpBufferCounter > 0f &&
+        if (Keyboard.current.spaceKey.wasPressedThisFrame &&
             (jumpsRemaining > 0 || coyoteTimeCounter > 0f))
         {
-            rb.linearVelocity = new Vector2(
-                rb.linearVelocity.x,
-                jumpForce
-            );
-
-            if (jumpsRemaining > 0)
-                jumpsRemaining--;
-
+            rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
+            jumpsRemaining--;
             coyoteTimeCounter = 0f;
-            jumpBufferCounter = 0f;
-            isGrounded = false;
         }
 
         bool shiftPressed =
@@ -193,9 +209,13 @@ public class PlayerMovement : MonoBehaviour
 
     void OnCollisionExit2D(Collision2D collision)
     {
-        if (collision.gameObject.CompareTag("Ground"))
-            isGrounded = false;
+    if (collision.gameObject.CompareTag("Ground"))
+        isGrounded = false;
     }
+
+    void CheckGround(Collision2D collision)
+{
+    if (!collision.gameObject.CompareTag("Ground")) return;
 
     void CheckGround(Collision2D collision)
     {
@@ -203,12 +223,10 @@ public class PlayerMovement : MonoBehaviour
 
         foreach (ContactPoint2D contact in collision.contacts)
         {
-            if (contact.normal.y > 0.5f)
-            {
-                isGrounded = true;
-                jumpsRemaining = 4;
-                return;
-            }
+            isGrounded = true;
+            jumpsRemaining = 4;
+            coyoteTimeCounter = coyoteTime;
+            return;
         }
     }
 

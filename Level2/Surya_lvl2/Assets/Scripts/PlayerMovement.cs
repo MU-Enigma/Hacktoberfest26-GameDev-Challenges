@@ -39,6 +39,7 @@ public class PlayerMovement : MonoBehaviour
 
     private Rigidbody2D rb;
     private Vector2 movement;
+    private SpriteRenderer spriteRenderer;
     private Vector3 originalScale;
     private int jumpsRemaining = 4;
     private bool isGrounded;
@@ -55,6 +56,7 @@ public class PlayerMovement : MonoBehaviour
         normalMoveSpeed = moveSpeed;
         rb = GetComponent<Rigidbody2D>();
         originalScale = transform.localScale;
+        spriteRenderer = GetComponentInChildren<SpriteRenderer>();  
     }
 
     void Update()
@@ -97,6 +99,11 @@ public class PlayerMovement : MonoBehaviour
             movement.x = 1f;
 
         movement = movement.normalized;
+
+        if (spriteRenderer != null && movement.x != 0)
+        {
+        spriteRenderer.flipX = movement.x < 0;
+        }
     }
 
     void FixedUpdate()

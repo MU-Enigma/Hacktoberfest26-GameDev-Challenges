@@ -25,6 +25,9 @@ public class PlayerMovement : MonoBehaviour
     public float sprintMultiplier = 1.7f;
     public float jumpForce = 8f;
 
+    [Header("Variable Jump Height")]
+    public float jumpCutMultiplier = 0.5f;
+
     [Header("Dash")]
     public float dashSpeed = 15f;
     public float dashDuration = 0.18f;
@@ -82,6 +85,16 @@ public class PlayerMovement : MonoBehaviour
 
         ReadMovement();
         HandleAbilities();
+
+        if (Keyboard.current != null &&
+            Keyboard.current.spaceKey.wasReleasedThisFrame &&
+            rb.linearVelocity.y > 0f)
+        {
+            rb.linearVelocity = new Vector2(
+                rb.linearVelocity.x,
+                rb.linearVelocity.y * jumpCutMultiplier
+            );
+        }
     }
 
     void ReadMovement()

@@ -6,20 +6,10 @@ using System.Collections;
 [RequireComponent(typeof(Rigidbody2D))]
 public class PlayerMovement : MonoBehaviour
 {
-    IEnumerator SlowPlayer()
-{
-    isSlowed = true;
-    moveSpeed = normalMoveSpeed * 0.5f;
-
-    yield return new WaitForSeconds(10f);
-
-    moveSpeed = normalMoveSpeed;
-    isSlowed = false;
-    slowCoroutine = null;
-}
     private Coroutine slowCoroutine;
     private bool isSlowed = false;
     private float normalMoveSpeed;
+
     [Header("Movement")]
     public float moveSpeed = 5f;
     public float sprintMultiplier = 1.7f;
@@ -65,15 +55,36 @@ public class PlayerMovement : MonoBehaviour
     void Update()
     {
         if (Keyboard.current != null)
-{
-    bool shiftPressed =
-        Keyboard.current.leftShiftKey.isPressed ||
-        Keyboard.current.rightShiftKey.isPressed;
+        {
+            bool shiftPressed =
+                Keyboard.current.leftShiftKey.isPressed ||
+                Keyboard.current.rightShiftKey.isPressed;
 
-    if (shiftPressed && Keyboard.current.sKey.wasPressedThisFrame)
-    {
-        if (slowCoroutine != null)
-            StopCoroutine(slowCoroutine);
+            if (shiftPressed &&
+                Keyboard.current.sKey.wasPressedThisFrame)
+            {
+                if (slowCoroutine != null)
+                    StopCoroutine(slowCoroutine);
+
+                slowCoroutine = StartCoroutine(SlowPlayer());
+            }
+
+            if (Keyboard.current.spaceKey.wasPressedThisFrame)
+                jumpBufferCounter = jumpBufferTime;
+            else
+                jumpBufferCounter = Mathf.Max(
+                    0f,
+                    jumpBufferCounter - Time.deltaTime
+                );
+        }
+
+        if (isGrounded)
+            coyoteTimeCounter = coyoteTime;
+        else
+            coyoteTimeCounter = Mathf.Max(
+                0f,
+                coyoteTimeCounter - Time.deltaTime
+            );
 
         slowCoroutine = StartCoroutine(SlowPlayer());
     }
@@ -95,6 +106,18 @@ public class PlayerMovement : MonoBehaviour
                 rb.linearVelocity.y * jumpCutMultiplier
             );
         }
+    }
+
+    IEnumerator SlowPlayer()
+    {
+        isSlowed = true;
+        moveSpeed = normalMoveSpeed * 0.5f;
+
+        yield return new WaitForSeconds(10f);
+
+        moveSpeed = normalMoveSpeed;
+        isSlowed = false;
+        slowCoroutine = null;
     }
 
     void ReadMovement()
@@ -152,13 +175,12 @@ public class PlayerMovement : MonoBehaviour
         }
 
         bool shiftPressed =
-        Keyboard.current.leftShiftKey.isPressed ||
-        Keyboard.current.rightShiftKey.isPressed;
+            Keyboard.current.leftShiftKey.isPressed ||
+            Keyboard.current.rightShiftKey.isPressed;
 
         if (Keyboard.current.sKey.isPressed &&
-        !shiftPressed &&
-        !isSlowed)
-
+            !shiftPressed &&
+            !isSlowed)
         {
             if (dashReady)
                 StartCoroutine(Dash());
@@ -171,8 +193,7 @@ public class PlayerMovement : MonoBehaviour
             StartCoroutine(SpecialAbility());
 
         if (Keyboard.current.rKey.wasPressedThisFrame &&
-        !Keyboard.current.leftShiftKey.isPressed &&
-        !Keyboard.current.rightShiftKey.isPressed)
+            !shiftPressed)
             ChangeSize();
     }
 
@@ -196,9 +217,11 @@ public class PlayerMovement : MonoBehaviour
 {
     if (!collision.gameObject.CompareTag("Ground")) return;
 
-    foreach (ContactPoint2D contact in collision.contacts)
+    void CheckGround(Collision2D collision)
     {
-        if (contact.normal.y > 0.5f)
+        if (!collision.gameObject.CompareTag("Ground")) return;
+
+        foreach (ContactPoint2D contact in collision.contacts)
         {
             isGrounded = true;
             jumpsRemaining = 4;
@@ -206,7 +229,6 @@ public class PlayerMovement : MonoBehaviour
             return;
         }
     }
-}
 
     IEnumerator Dash()
     {
@@ -218,12 +240,17 @@ public class PlayerMovement : MonoBehaviour
         if (direction == 0)
             direction = transform.localScale.x >= 0 ? 1f : -1f;
 
-        rb.linearVelocity = new Vector2(direction * dashSpeed, 0f);
+        rb.linearVelocity = new Vector2(
+            direction * dashSpeed,
+            0f
+        );
 
         yield return new WaitForSeconds(dashDuration);
 
         isDashing = false;
+
         yield return new WaitForSeconds(dashCooldown);
+
         dashReady = true;
     }
 
@@ -245,7 +272,9 @@ public class PlayerMovement : MonoBehaviour
         if (specialActive) yield break;
 
         specialActive = true;
+
         yield return new WaitForSeconds(specialDuration);
+
         specialActive = false;
     }
 

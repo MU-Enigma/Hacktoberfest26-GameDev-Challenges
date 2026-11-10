@@ -43,6 +43,10 @@ public class PlayerMovement : MonoBehaviour
     private int jumpsRemaining = 4;
     private bool isGrounded;
     private bool isDashing;
+
+    [Header("Coyote Time")]
+    public float coyoteTime = 0.15f;
+    private float coyoteTimeCounter;
     private bool dashReady = true;
     private bool specialActive;
 
@@ -69,6 +73,11 @@ public class PlayerMovement : MonoBehaviour
         slowCoroutine = StartCoroutine(SlowPlayer());
     }
 }
+        if (isGrounded)
+            coyoteTimeCounter = coyoteTime;
+        else
+            coyoteTimeCounter -= Time.deltaTime;
+
         ReadMovement();
         HandleAbilities();
     }
@@ -115,10 +124,11 @@ public class PlayerMovement : MonoBehaviour
         if (Keyboard.current == null) return;
 
         if (Keyboard.current.spaceKey.wasPressedThisFrame &&
-            jumpsRemaining > 0)
+            (jumpsRemaining > 0 || coyoteTimeCounter > 0f))
         {
             rb.linearVelocity = new Vector2(rb.linearVelocity.x, jumpForce);
             jumpsRemaining--;
+            coyoteTimeCounter = 0f;
         }
 
         bool shiftPressed =
@@ -156,6 +166,12 @@ public class PlayerMovement : MonoBehaviour
         CheckGround(collision);
     }
 
+    void OnCollisionExit2D(Collision2D collision)
+    {
+    if (collision.gameObject.CompareTag("Ground"))
+        isGrounded = false;
+    }
+
     void CheckGround(Collision2D collision)
 {
     if (!collision.gameObject.CompareTag("Ground")) return;
@@ -166,6 +182,7 @@ public class PlayerMovement : MonoBehaviour
         {
             isGrounded = true;
             jumpsRemaining = 4;
+            coyoteTimeCounter = coyoteTime;
             return;
         }
     }
